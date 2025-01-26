@@ -1,8 +1,9 @@
-return{
+return {
     das=10,arr=2,
-    dascut=0,dropcut=0,
+    dascut=0,irscut=6,dropcut=0,
     sddas=2,sdarr=2,
     ihs=true,irs=true,ims=true,
+    logicalIHS=true,logicalIRS=true,logicalIMS=true,
 
     ghostType='gray',
     block=true,ghost=.3,center=1,
@@ -33,14 +34,14 @@ return{
     bone=false,
     lockout=false,
     fieldH=20,heightLimit=1e99,
-    nextCount=6,nextStartPos=1,
+    trueNextCount=10,nextCount=6,nextStartPos=1,
     holdMode='hold',holdCount=1,
     infHold=false,phyHold=false,
     ospin=true,deepDrop=false,
     RS='TRS',
     sequence='bag',
     seqData={1,2,3,4,5,6,7},
-    skinSet='crystal_scf',
+    skinSet='Crystal (Scf)',
     face=false,skin=false,
     mission=false,
 
@@ -62,10 +63,16 @@ return{
     mindas=0,minarr=0,minsdarr=0,
     noInitSZO=false,
 
-    mesDisp={},
-    hook_drop={},
-    hook_die={},
-    task={},
+    -- Some Events are registered in player/init.lua, see "tableNeedMerge"
+    extraEvent={
+        {'attack',5},
+    },
+    extraEventHandler={
+        attack=function(P,source,...)
+            P:beAttacked(source,...)
+        end,
+    },
+
     eventSet="X",
 
     bg='none',bgm='race',

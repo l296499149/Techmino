@@ -1,7 +1,7 @@
-return{
-    ["apkCode"]=438,
-    ["code"]=1703,
-    ["string"]="V0.17.3",
-    ["room"]="ver A-7",
-    ["name"]="矿井 Mine",
+return {
+    ["apkCode"]=1722,
+    ["code"]=1722,
+    ["string"]="V0.17.22",
+    ["room"]="ver A-15",
+    ["name"]="暂停 Break",
 }

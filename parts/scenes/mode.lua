@@ -1,47 +1,50 @@
-local gc=love.graphics
-local gc_push,gc_pop=gc.push,gc.pop
-local gc_translate,gc_scale,gc_rotate,gc_applyTransform=gc.translate,gc.scale,gc.rotate,gc.applyTransform
-local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
-local gc_draw,gc_line=gc.draw,gc.line
-local gc_rectangle,gc_circle=gc.rectangle,gc.circle
-local gc_print,gc_printf=gc.print,gc.printf
+local gc_push,gc_pop=GC.push,GC.pop
+local gc_translate,gc_scale,gc_rotate,gc_applyTransform=GC.translate,GC.scale,GC.rotate,GC.applyTransform
+local gc_setColor,gc_setLineWidth=GC.setColor,GC.setLineWidth
+local gc_draw,gc_line=GC.draw,GC.line
+local gc_rectangle,gc_circle=GC.rectangle,GC.circle
+local gc_print,gc_printf=GC.print,GC.printf
 
 local ms,kb,tc=love.mouse,love.keyboard,love.touch
-local mt=love.math
 
 local max,min=math.max,math.min
-local int,abs=math.floor,math.abs
-
-local setFont=FONT.set
+local floor,abs=math.floor,math.abs
 
 local mapCam={
-    sel=false,--Selected mode ID
-    xOy=mt.newTransform(0,0,0,1),--Transformation for map display
-    keyCtrl=false,--If controlling with key
+    sel=false,-- Selected mode ID
+    xOy=love.math.newTransform(0,0,0,1),-- Transformation for map display
+    keyCtrl=false,-- If controlling with key
 
-    --For auto zooming when enter/leave scene
+    -- For auto zooming when enter/leave scene
     zoomMethod=false,
     zoomK=false,
 }
 local visibleModes
 local touchDist
+local grid
+local min_x,max_x=-1500,1350
+local min_y,max_y=-1900,660
+local modUsed
 
 local scene={}
 
-function scene.sceneInit()
+function scene.enter()
+    grid=false
     BG.set()
-    mapCam.zoomK=SCN.prev=='main'and 5 or 1
-    visibleModes={}--1=unlocked, 2=locked but visible
+    mapCam.zoomK=SCN.prev=='main' and 5 or 1
+    visibleModes={}-- 1=unlocked, 2=locked but visible
     for name,M in next,MODES do
-        if RANKS[name]and M.x then
+        if RANKS[name] and M.x then
             visibleModes[name]=1
             if M.unlock then
                 for i=1,#M.unlock do
-                    visibleModes[M.unlock[i]]=visibleModes[M.unlock[i]]or 2
+                    visibleModes[M.unlock[i]]=visibleModes[M.unlock[i]] or 2
                 end
             end
         end
     end
+    modUsed=usingMod()
+    DiscordRPC.update("Picking mode")
 end
 
 local function _getK()
@@ -53,14 +56,14 @@ end
 
 local function _onModeRaw(x,y)
     for name,M in next,MODES do
-        if visibleModes[name]and M.x then
+        if visibleModes[name] and M.x then
             local s=M.size
             if M.shape==1 then
                 if x>M.x-s and x<M.x+s and y>M.y-s and y<M.y+s then return name end
             elseif M.shape==2 then
                 if abs(x-M.x)+abs(y-M.y)<s+12 then return name end
             elseif M.shape==3 then
-                if(x-M.x)^2+(y-M.y)^2<(s+6)^2 then return name end
+                if (x-M.x)^2+(y-M.y)^2<(s+6)^2 then return name end
             end
         end
     end
@@ -68,8 +71,8 @@ end
 local function _moveMap(dx,dy)
     local k=_getK()
     local x,y=_getPos()
-    if x>1300 and dx<0 or x<-1500 and dx>0 then dx=0 end
-    if y>420 and dy<0 or y<-1900 and dy>0 then dy=0 end
+    if x>max_x and dx<0 or x<min_x and dx>0 then dx=0 end
+    if y>max_y and dy<0 or y<min_y and dy>0 then dy=0 end
     mapCam.xOy:translate(dx/k,dy/k)
 end
 function scene.wheelMoved(_,dy)
@@ -82,7 +85,7 @@ function scene.wheelMoved(_,dy)
     mapCam.xOy:translate(x*(1-k),y*(1-k))
 end
 function scene.mouseMove(_,_,dx,dy)
-    if ms.isDown(1)then
+    if ms.isDown(1) then
         _moveMap(dx,dy)
     end
     mapCam.keyCtrl=false
@@ -113,11 +116,11 @@ function scene.touchDown()
 end
 function scene.touchMove(x,y,dx,dy)
     local L=tc.getTouches()
-    if not L[2]then
+    if not L[2] then
         _moveMap(dx,dy)
-    elseif not L[3]then
+    elseif not L[3] then
         x,y=SCR.xOy:inverseTransformPoint(tc.getPosition(L[1]))
-        dx,dy=SCR.xOy:inverseTransformPoint(tc.getPosition(L[2]))--Not delta!!!
+        dx,dy=SCR.xOy:inverseTransformPoint(tc.getPosition(L[2]))-- Not delta!!!
         local d=(x-dx)^2+(y-dy)^2
         if d>100 then
             d=d^.5
@@ -134,7 +137,7 @@ function scene.touchClick(x,y)
 end
 function scene.keyDown(key,isRep)
     if isRep then return end
-    if key=='return'then
+    if key=='return' or key=='kpenter' then
         if mapCam.sel then
             if visibleModes[mapCam.sel]==2 then
                 MES.new('info',text.unlockHint)
@@ -143,9 +146,11 @@ function scene.keyDown(key,isRep)
                 loadGame(mapCam.sel)
             end
         end
-    elseif key=='f1'then
+    elseif key=='f1' then
         SCN.go('mod')
-    elseif key=='escape'then
+    elseif key=='f2' then
+        grid=not grid
+    elseif key=='escape' then
         if mapCam.sel then
             mapCam.sel=false
         else
@@ -158,10 +163,10 @@ function scene.update()
     local dx,dy=0,0
     local F
     if not SCN.swapping then
-        if kb.isDown('up',   'w')then dy=dy+10 F=true end
-        if kb.isDown('down', 's')then dy=dy-10 F=true end
-        if kb.isDown('left', 'a')then dx=dx+10 F=true end
-        if kb.isDown('right','d')then dx=dx-10 F=true end
+        if kb.isDown('up',   'w') then dy=dy+10 F=true end
+        if kb.isDown('down', 's') then dy=dy-10 F=true end
+        if kb.isDown('left', 'a') then dx=dx+10 F=true end
+        if kb.isDown('right','d') then dx=dx-10 F=true end
         local js=Z.getJsState()[1]
         if js then
             local sx,sy=js._jsObj:getGamepadAxis('leftx'),js._jsObj:getGamepadAxis('lefty')
@@ -176,7 +181,7 @@ function scene.update()
     end
     if F then
         mapCam.keyCtrl=true
-        if kb.isDown('lctrl','rctrl','lalt','ralt')then
+        if kb.isDown('lctrl','rctrl','lalt','ralt') then
             scene.wheelMoved(nil,(dy-dx)*.026)
         else
             _moveMap(dx,dy)
@@ -189,8 +194,8 @@ function scene.update()
         end
     end
 
-    local _=SCN.stat.tar
-    mapCam.zoomMethod=_=="game"and 1 or _=="mode"and 2
+    local _=SCN.state.tar
+    mapCam.zoomMethod=_=="game" and 1 or _=="mode" and 2
     if mapCam.zoomMethod==1 then
         _=mapCam.zoomK
         if _<.8 then _=_*1.05 end
@@ -201,7 +206,7 @@ function scene.update()
     end
 end
 
---noRank/B/A/S/U/X
+-- noRank/B/A/S/U/X
 local baseRankColor={
     [0]={0,0,0,.3},
     {.2,.4,.6,.3},
@@ -211,15 +216,21 @@ local baseRankColor={
     {.85,.3,.8,.3},
 }
 local function _drawModeShape(M,S,drawType)
-    if M.shape==1 then--Rectangle
+    if M.shape==1 then-- Rectangle
         gc_rectangle(drawType,M.x-S,M.y-S,2*S,2*S)
-    elseif M.shape==2 then--Diamond
+    elseif M.shape==2 then-- Diamond
         gc_circle(drawType,M.x,M.y,S+12,4)
-    elseif M.shape==3 then--Octagon
+    elseif M.shape==3 then-- Octagon
         gc_circle(drawType,M.x,M.y,S+6,8)
     end
 end
 function scene.draw()
+    -- Mod indicator
+    if modUsed then
+        setModBackgroundColor()
+        gc_rectangle('fill',140-220/2,655-80/2,220,80,5,5)
+    end
+
     local _
     gc_push('transform')
     gc_translate(640,360)
@@ -227,14 +238,29 @@ function scene.draw()
     gc_scale(mapCam.zoomK^.7)
     gc_applyTransform(mapCam.xOy);
 
+    if grid then
+        gc_setColor(1,0,.26,.26)
+        gc_setLineWidth(1)
+        for x=-2000,2000,200 do
+            gc_line(x,-2200,x,1000)
+        end
+        for y=-2200,1000,200 do
+            gc_line(-2000,y,2000,y)
+        end
+        gc_setColor(1,0,.26,.626)
+        gc_setLineWidth(2)
+        gc_line(0,-2200,0,1000)
+        gc_line(-2000,0,1000,0)
+    end
+
     local R=RANKS
     local sel=mapCam.sel
 
-    --Lines connecting modes
+    -- Lines connecting modes
     gc_setLineWidth(8)
     gc_setColor(1,1,1,.2)
     for name,M in next,MODES do
-        if R[name]and M.unlock and M.x then
+        if R[name] and M.unlock and M.x then
             for _=1,#M.unlock do
                 local m=MODES[M.unlock[_]]
                 gc_line(M.x,M.y,m.x,m.y)
@@ -242,7 +268,7 @@ function scene.draw()
         end
     end
 
-    --Modes
+    -- Modes
     setFont(80)
     gc_setLineWidth(4)
     for name,M in next,MODES do
@@ -251,7 +277,7 @@ function scene.draw()
             local rank=R[name]
             local S=M.size
 
-            --Draw shapes on map
+            -- Draw shapes on map
             if unlocked==1 then
                 gc_setColor(baseRankColor[rank])
                 _drawModeShape(M,S,'fill')
@@ -259,7 +285,7 @@ function scene.draw()
             gc_setColor(1,1,sel==name and 0 or 1,unlocked==1 and .8 or .3)
             _drawModeShape(M,S,'line')
 
-            --Icon
+            -- Icon
             local icon=M.icon
             if icon then
                 gc_setColor(unlocked==1 and COLOR.lH or COLOR.dH)
@@ -267,44 +293,47 @@ function scene.draw()
                 gc_draw(icon,M.x,M.y,nil,S/length,nil,length,length)
             end
 
-            --Rank
+            -- Rank
             if unlocked==1 then
                 name=RANK_CHARS[rank]
                 if name then
                     gc_setColor(COLOR.dX)
-                    mStr(name,M.x+M.size*.7,M.y-50-M.size*.7)
+                    GC.mStr(name,M.x+M.size*.7,M.y-50-M.size*.7)
                     gc_setColor(RANK_COLORS[rank])
-                    mStr(name,M.x+M.size*.7+4,M.y-50-M.size*.7-4)
+                    GC.mStr(name,M.x+M.size*.7+4,M.y-50-M.size*.7-4)
                 end
             end
         end
     end
     gc_pop()
 
-    --Score board
+    -- Score board
     if sel then
         local M=MODES[sel]
         gc_setColor(COLOR.lX)
-        gc_rectangle('fill',920,0,360,720,5)--Info board
+        gc_rectangle('fill',920,0,360,720,5)-- Info board
         gc_setColor(COLOR.Z)
-        setFont(40)mStr(text.modes[sel][1],1100,5)
-        setFont(30)mStr(text.modes[sel][2],1100,50)
-        setFont(25)gc_printf(text.modes[sel][3],920,110,360,'center')
+        local modeText=text.modes[sel]
+        if modeText then
+            setFont(40)GC.mStr(modeText[1],1100,5)
+            setFont(30)GC.mStr(modeText[2],1100,50)
+            setFont(25)gc_printf(modeText[3],920,110,360,'center')
+        end
         if M.slowMark then
             gc_draw(IMG.ctrlSpeedLimit,1230,50,nil,.4)
         end
         if M.score then
             mText(TEXTOBJ.highScore,1100,240)
             gc_setColor(COLOR.X)
-            gc_rectangle('fill',940,290,320,280,5)--Highscore board
+            gc_rectangle('fill',940,290,320,280,5)-- Highscore board
             local L=M.records
             gc_setColor(1,1,1)
             if visibleModes[sel]==2 then
                 mText(TEXTOBJ.modeLocked,1100,370)
-            elseif L[1]then
+            elseif L[1] then
                 for i=1,#L do
                     local t=M.scoreDisp(L[i])
-                    local f=int((30-#t*.5)/5)*5
+                    local f=floor((30-#t*.5)/5)*5
                     setFont(f)
                     gc_print(t,955,275+25*i+17-f*.7)
                     _=L[i].date
@@ -330,7 +359,7 @@ end
 
 scene.widgetList={
     WIDGET.newKey{name='mod',     x=140,y=655,w=220,h=80,font=35,code=goScene'mod'},
-    WIDGET.newButton{name='start',x=1040,y=655,w=180,h=80,font=40,code=pressKey'return',hideF=function()return not mapCam.sel end},
+    WIDGET.newButton{name='start',x=1040,y=655,w=180,h=80,font=40,code=pressKey'return',hideF=function() return not mapCam.sel end},
     WIDGET.newButton{name='back', x=1200,y=655,w=120,h=80,sound='back',font=60,fText=CHAR.icon.back,code=backScene},
 }
 

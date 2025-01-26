@@ -12,6 +12,8 @@ Lua is free software distributed under the terms of the MIT license. Copyright �
 
 json.lua is copyrighted by rxi. © 2022 rxi.
 
+discord-rpc.dll is copyrighted by Discord, Inc. © 2017 Discord, Inc.
+
 IBM Plex is copyrighted by the International Business Machines Corporation. IBM and IBM Plex are trademarks of IBM Corp, registered in many jurisdictions worldwide. IBM Plex is licensed under the SIL Open Font License, Version 1.1.
 
 
@@ -27,7 +29,7 @@ JetBrains Mono is copyrighted by the JetBrains Mono Project authors. JetBrains M
 "Windows", the Windows logo, "Xbox", Xbox logo, and "Microsoft" are registered trademarks of Microsoft Corporation in the United States of America and other countries or regions.
 
 
-The Apple logo, "Apple Inc.," iOS, iPadOS, macOS, iPhone, and Mac are registered trademarks of Apple Inc. in the United States of America and other countries or regions.
+The Apple logo, "Apple Inc.," iOS, iPadOS, macOS, iPhone, Mac, and Apple Arcade are registered trademarks of Apple Inc. in the United States of America and other countries or regions.
 
 
 "EA" and "Electronic Arts" are registered trademarks of Electronic Arts Inc. © 2022 Electronic Arts Inc.
@@ -36,13 +38,15 @@ SEGA and the SEGA logo are registered trademarks of Sega Corporation. © 2022 Se
 
 Oculus Quest is a registered trademark of Facebook Technologies, LLC. © Meta Platforms, Inc.
 
-"Nintendo" is a registered trademarks of Nintendo Co., Ltd. © 2022 Nintendo Co., Ltd.
+"Nintendo" is a registered trademark of Nintendo Co., Ltd. © 2022 Nintendo Co., Ltd.
 
 N3TWORK is a registered trademark of N3TWORK Inc. © 2022 N3TWORK Inc.
 
 GoldWave is a registered trademark of GoldWave, Inc.
 
 Linux is a registered trademark of Linus Torvalds.
+
+Google is a registered trademark of Google LLC.
 
 Touhou Project © Team Shanghai Alice 2002–2022.
 

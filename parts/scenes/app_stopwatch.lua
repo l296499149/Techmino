@@ -23,10 +23,11 @@ end
 
 local scene={}
 
-function scene.sceneInit()
+function scene.enter()
     state=0
     time1=STRING.time(0)
     time2=STRING.time(0)
+    DiscordRPC.update("Timing something")
 end
 
 function scene.mouseDown()
@@ -45,7 +46,7 @@ function scene.touchUp()
 end
 function scene.keyDown(key,isRep)
     if isRep then return end
-    if key=='escape'then
+    if key=='escape' then
         SCN.back()
     else
         press()
@@ -66,10 +67,10 @@ end
 
 function scene.draw()
     FONT.set(60)
-    mStr(CHAR.icon.import,340,230)
-    mStr(CHAR.icon.export,940,230)
-    mStr(time1,340,300)
-    mStr(time2,940,300)
+    GC.mStr(CHAR.icon.import,340,230)
+    GC.mStr(CHAR.icon.export,940,230)
+    GC.mStr(time1,340,300)
+    GC.mStr(time2,940,300)
 end
 
 scene.widgetList={

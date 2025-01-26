@@ -1,33 +1,32 @@
-local gc=love.graphics
-
-local function NSC(x,y)--New & Set Canvas
-    local _=gc.newCanvas(x,y)
-    gc.setCanvas(_)
-    return _
+local function NSC(x,y)-- New & Set Canvas
+    local c=GC.newCanvas(x,y)
+    GC.setCanvas(c)
+    GC.clear(1,1,1,0)
+    return c
 end
 local TEXTURE={}
 
 
-gc.setDefaultFilter('nearest','nearest')
+GC.setDefaultFilter('nearest','nearest')
 
 
-TEXTURE.miniBlock={}--29 mini blocks image
+TEXTURE.miniBlock={}-- 29 mini blocks image
 do
-    gc.setColor(1,1,1)
+    GC.setColor(1,1,1)
     for i=1,29 do
         local b=BLOCKS[i][0]
         TEXTURE.miniBlock[i]=NSC(#b[1]*2,#b*2)
-        for y=1,#b do for x=1,#b[1]do
-            if b[y][x]then
-                gc.rectangle('fill',2*(x-1),2*(#b-y),2,2)
+        for y=1,#b do for x=1,#b[1] do
+            if b[y][x] then
+                GC.rectangle('fill',2*(x-1),2*(#b-y),2,2)
             end
         end end
     end
 end
 
-TEXTURE.puzzleMark={}--Texture for puzzle mode
+TEXTURE.puzzleMark={}-- Texture for puzzle mode
 do
-    gc.setLineWidth(2)
+    GC.setLineWidth(2)
     for i=1,17 do
         TEXTURE.puzzleMark[i]=GC.DO{30,30,
             {'setLW',2},
@@ -50,66 +49,90 @@ do
             {'line',5,25,25,5},
         }}
     }
+    TEXTURE.puzzleMark[-2]=GC.DO{30,30,
+        {'setCL',1,1,1,.26},
+        {'draw',GC.DO{30,30,
+            {'setFT',25,'mono'},
+            {'print',"?",7,-2},
+            {'print',"?",8,-2},
+            {'print',"?",7,-3},
+            {'print',"?",8,-3},
+        }}
+    }
 end
 
-TEXTURE.pixelNum={}--A simple pixel font
+TEXTURE.pixelNum={}-- A simple pixel font
 for i=0,9 do
     TEXTURE.pixelNum[i]=GC.DO{5,9,
-        {('1011011111'):byte(i+1)>48,'fRect',1,0,3,1},--up
-        {('0011111011'):byte(i+1)>48,'fRect',1,4,3,1},--middle
-        {('1011011011'):byte(i+1)>48,'fRect',1,8,3,1},--down
-        {('1000111011'):byte(i+1)>48,'fRect',0,1,1,3},--up-left
-        {('1111100111'):byte(i+1)>48,'fRect',4,1,1,3},--up-right
-        {('1010001010'):byte(i+1)>48,'fRect',0,5,1,3},--down-left
-        {('1101111111'):byte(i+1)>48,'fRect',4,5,1,3},--down-right
+        {('1011011111'):byte(i+1)>48,'fRect',1,0,3,1},-- up
+        {('0011111011'):byte(i+1)>48,'fRect',1,4,3,1},-- middle
+        {('1011011011'):byte(i+1)>48,'fRect',1,8,3,1},-- down
+        {('1000111011'):byte(i+1)>48,'fRect',0,1,1,3},-- up-left
+        {('1111100111'):byte(i+1)>48,'fRect',4,1,1,3},-- up-right
+        {('1010001010'):byte(i+1)>48,'fRect',0,5,1,3},-- down-left
+        {('1101111111'):byte(i+1)>48,'fRect',4,5,1,3},-- down-right
     }
 end
 
 
-gc.setDefaultFilter('linear','linear')
+GC.setDefaultFilter('linear','linear')
 
 
-TEXTURE.title=NSC(1040,236)--Title image (Middle: 580,118)
+TEXTURE.title=NSC(1040,236)-- Title image (Middle: 580,118)
 do
-    gc.translate(10,10)
-    gc.setColor(.2,.2,.2)
+    GC.translate(10,10)
+    GC.setColor(.2,.2,.2)
     for i=1,#SVG_TITLE_FILL do
         local triangles=love.math.triangulate(SVG_TITLE_FILL[i])
         for j=1,#triangles do
-            gc.polygon('fill',triangles[j])
+            GC.polygon('fill',triangles[j])
         end
     end
-    gc.setLineWidth(6)
-    gc.setColor(COLOR.Z)
+    GC.setLineWidth(6)
+    GC.setColor(COLOR.Z)
     for i=1,#SVG_TITLE_LINE do
-        gc.polygon('line',SVG_TITLE_LINE[i])
+        GC.polygon('line',SVG_TITLE_LINE[i])
     end
-    gc.translate(-10,-10)
+    GC.translate(-10,-10)
 end
 
-TEXTURE.title_color=NSC(1040,236)--Title image (colored)
+TEXTURE.title_color=NSC(1040,236)-- Title image (colored)
 do
     local titleColor={COLOR.P,COLOR.F,COLOR.V,COLOR.A,COLOR.M,COLOR.N,COLOR.W,COLOR.Y}
 
-    gc.translate(10,10)
+    GC.translate(10,10)
     for i=1,#SVG_TITLE_FILL do
         local triangles=love.math.triangulate(SVG_TITLE_FILL[i])
-        gc.setColor(COLOR.D)
+        GC.setColor(COLOR.D)
         for j=1,#triangles do
-            gc.polygon('fill',triangles[j])
+            GC.polygon('fill',triangles[j])
         end
 
-        gc.setColor(.2+.8*titleColor[i][1],.2+.8*titleColor[i][2],.2+.8*titleColor[i][3],.3)
+        GC.setColor(.2+.8*titleColor[i][1],.2+.8*titleColor[i][2],.2+.8*titleColor[i][3],.3)
         for j=1,#triangles do
-            gc.polygon('fill',triangles[j])
+            GC.polygon('fill',triangles[j])
         end
     end
-    gc.setLineWidth(6)
-    gc.setColor(COLOR.Z)
+    GC.setLineWidth(6)
+    GC.setColor(COLOR.Z)
     for i=1,#SVG_TITLE_LINE do
-        gc.polygon('line',SVG_TITLE_LINE[i])
+        GC.polygon('line',SVG_TITLE_LINE[i])
     end
-    gc.translate(-10,-10)
+    GC.translate(-10,-10)
+end
+
+TEXTURE.spiderweb=NSC(60,60)
+do
+    GC.setLineWidth(1)
+    GC.push('transform')
+    GC.translate(30,30)
+    for i=8,22,6 do
+        GC.circle('line',0,0,i,7)
+    end
+    for i=0,7 do
+        GC.line(0,0,26*math.cos(MATH.tau/7*i),26*math.sin(MATH.tau/7*i))
+    end
+    GC.pop()
 end
 
 TEXTURE.multiple=GC.DO{15,15,
@@ -129,16 +152,12 @@ TEXTURE.playerBorder=GC.DO{334,620,
 
 TEXTURE.gridLines=(function()
     local L={300,640,{'setLW',2}}
-    for x=1,9 do table.insert(L,{'line',30*x,0,30*x,640})end
-    for y=0,20 do table.insert(L,{'line',0,10+30*y,300,10+30*y})end
+    for x=1,9 do table.insert(L,{'line',30*x,0,30*x,640}) end
+    for y=0,20 do table.insert(L,{'line',0,10+30*y,300,10+30*y}) end
     return GC.DO(L)
 end)()
 
 TEXTURE.dial={
-    frame=GC.DO{80,80,
-        {'setLW',3},
-        {'dCirc',40,40,38},
-    },
     needle=GC.DO{32,3,
         {'setLW',3},
         {'fRect',0,0,32,3,2},
@@ -147,5 +166,5 @@ TEXTURE.dial={
     }
 }
 
-gc.setCanvas()
+GC.setCanvas()
 return TEXTURE

@@ -1,4 +1,4 @@
-return{
+return {
     fallback='zh',
     loadText={
         loadSFX="加載音效資源",
@@ -17,16 +17,18 @@ return{
     playedLong="你玩太久了！注意休息！",
     playedTooMuch="今天玩得太久啦！Techmino好玩但也要注意休息哦~",
     settingWarn="正在修改不常用設定，小心操作！",
+    settingWarn2="該設定需要重啟後生效",
 
     atkModeName={"隨機","徽章","K.O.","反擊"},
     royale_remain="剩下 $1 名玩家",
     powerUp={[0]="000%UP","025%UP","050%UP","075%UP","100%UP"},
     cmb={nil,"1 Combo","2 Combo","3 Combo","4 Combo","5 Combo","6 Combo","7 Combo","8 Combo","9 Combo","10 Combo！","11 Combo！","12 Combo！","13 Combo！","14 Combo！","15 Combo！","16 Combo！","17 Combo！","18 Combo！","19 Combo！","MEGACMB"},
-    spin="-spin",
+    spin="-spin ",
+    spinNC="-spin",
     clear={"Single","Double","Triple","Techrash","Pentacrash","Hexacrash","Heptacrash","Octacrash","Nonacrash","Decacrash","Undecacrash","Dodecacrash","Tridecacrash","Tetradecacrash","Pentadecacrash","Hexadecacrash","Heptadecacrash","Octadecacrash","Nonadecacrash","Ultracrash","Impossicrash"},
     cleared="$1 lines",
     mini="Mini",b2b="B2B ",b3b="B2B2B ",
-    PC="Perfect Clear",HPC="Half Clear",
+    PC="Perfect Clear",HPC="Half PC",
     replaying="[重播]",
     tasUsing="[TAS]",
 
@@ -38,6 +40,10 @@ return{
     maxspeed="最大速度",
     speedup="加速",
     missionFailed="任務外清除",
+    infHeightOn="無限高度 開",
+    infHeightOff="無限高度 關",
+    infHeightHint="用功能鍵1切換",
+    highestGrade="最高段位: $1",
 
     speedLV="速度等級",
     piece="塊數",line="行數",atk="攻擊",eff="效率",
@@ -49,7 +55,7 @@ return{
 
     win="勝利",
     lose="失敗",
-
+    torikan="未達標",
     finish="完成",
     gamewin="勝利",
     gameover="遊戲結束",
@@ -61,10 +67,13 @@ return{
 
     page="頁面:",
 
+    ai_puzzle="不能同時開啟AI和拼圖模式",
+    ai_mission="不能同時開啟AI和自定義任務",
+    ai_badPiece="不能同時開啟AI和含有非四連方塊的自定義序列",
     cc_fixed="不能同時開啟CC和固定序列",
     cc_swap="不能同時開啟CC和swap的暫存模式",
-    ai_prebag="不能同時開啟AI和含有非四連方塊的自定義序列",
-    ai_mission="不能同時開啟AI和自定義任務",
+    cc_solid="開啟CC時不能存在預先填滿的行",
+    cc_field_too_high="開啓CC時最高出塊高度不能超過40",
     switchSpawnSFX="請開啟方塊生成音效",
     needRestart="重新啟動以應用所有更改",
 
@@ -86,6 +95,8 @@ return{
     dataCorrupted="數據損壞",
     pasteWrongPlace="提醒：可能黏貼錯地方了",
     noFile="文件未找到",
+    invalidSequence="無效序列模式",
+    tooHighField="超過126行的場地數據已被丟棄",
 
     nowPlaying="正在播放:",
 
@@ -103,47 +114,99 @@ return{
 
     dictNote="==拷貝自小z辭典==",
 
-    getNoticeFail="無法獲取公告",
+
+
+    -- Server's warn/error messages
+    Techrater={
+        internalError="內部錯誤",
+        databaseError="資料庫錯誤",
+        invalidFormat="json格式無效",
+        invalidArguments="參數無效",
+        tooFrequent="請求太頻繁",
+        notAvailable="無效請求",
+        noPermission="沒有許可權",
+        roomNotFound="找不到房間",
+
+        -- Controllers
+        WebSocket={
+            invalidConnection="無效連接",
+            invalidAction="無效操作",
+            playerNotFound="找不到玩家",
+            connectionFailed="連接失敗",
+        },
+        -- Filters
+        CheckPermission={
+            playerNotFound="找不到玩家",
+        },
+        -- Plugins
+        ConnectionManager={
+            playerInvalid="無效玩家",
+            playerNotFound="找不到玩家",
+            connectionReplaced="連接已更換",
+        },
+        NoticeManager={
+            noticeNotFound="找不到公告",
+        },
+        PlayerManager={
+            invalidCode="無效驗證碼",
+            invalidEmail="無效郵箱",
+            playerNotFound="找不到玩家",
+            invalidEmailPass="郵箱或密碼無效",
+            emailExists="郵箱存在",
+            emailSendError="郵箱發送錯誤",
+        },
+        -- Strategies
+        PlayerRole={
+            invalidRole="無效角色",
+            invalidTarget="無效目標",
+        },
+        PlayerType={
+            invalidType="無效類型",
+            roomFull="房間已滿",
+        },
+        RoomJoin={
+            wrongPassword="密碼錯誤",
+        },
+    },
+
+    tooFrequent="操作太頻繁",
+    roomPasswordChanged="房間密碼已更改",
     oldVersion="版本 $1 現已推出",
-    needUpdate="請更新遊戲！",
     versionNotMatch="版本不匹配",
     notFinished="即將推出！",
 
-    jsonError="JSON錯誤",
-
     noUsername="請輸入用戶名",
     wrongEmail="無效的電郵地址",
+    wrongCode="無效的驗證碼",
     noPassword="請輸入密碼",
     diffPassword="密碼不匹配",
-    registerRequestSent="已發送註冊請求",
-    registerOK="註冊成功！",
-    loginOK="登錄成功",
-    accessOK="身份認證成功",
+    checkEmail="請查看郵件驗證碼",
 
-    wsConnecting="正在連接……",
-    wsFailed="連接失敗",
-    wsClose="連接斷開:",
+    wsFailed="連接失敗: $1",
+    wsClose="連接斷開: $1",
     netTimeout="連接超時",
+    serverDown="哎唷!服務器不在线",
+    requestFailed="請求失敗",
 
-    onlinePlayerCount="在線用戶數",
+    onlinePlayerCount="在線用戶數: $1",
     createRoomSuccessed="房間已創建！",
+    playerKicked="#$1 把 #$2 移出了房間",
+    becomeHost="$1 成為了房主",
     started="遊戲中",
-    joinRoom="進入房間",
-    leaveRoom="離開房間",
+    joinRoom="$1 進入房間",
+    leaveRoom="$1 離開房間",
+    roomRemoved="房間被解散",
     ready="準備！",
-    connStream="正在連接……",
-    waitStream="等待其他用戶連接……",
     spectating="旁觀中",
-    chatRemain="用戶數:",
-    chatStart="------訊息開始------",
-    chatHistory="------以上為歷史訊息------",
 
-    keySettingInstruction="點擊來設置鍵位\n按esc來取消選中\n按退格鍵來清除選中",
+
+
+    keySettingInstruction="點擊來設定鍵位\n按esc來取消選中\n按退格鍵來清除選中",
     customBGhelp="把圖片檔案拖到這個視窗裏使用自定義背景",
     customBGloadFailed="自定義背景的圖片檔案格式不支持",
 
     errorMsg="Techmino遇到問題，需要重新啟動。\n我們已經收集了一些錯誤信息，你可以反饋給作者。",
-    tryAnotherBuild="[無效的 UTF-8] 如果你使用的是Windows作業系統，請嘗試下載Techmino-win32或Techmino-win64（與你現在使用的不同的版本）。",
+    tryAnotherBuild="[無效的UTF-8] 如果你使用的是Windows作業系統，請嘗試下載Techmino-win32或Techmino-win64（與你現在使用的不同的版本）。",
 
     modInstruction="選擇你想使用的Mod！\n不同的Mod會以不同的方式改變遊戲規則(可能導致遊戲異常)\n快來開發新玩法或挑戰自我吧！\n提醒：開啟Mod會使成績無效，你可以使用鍵盤開關Mod，按下shift反向",
     modInfo={
@@ -176,7 +239,7 @@ return{
         "塊數:",
         "行清除/挖掘:",
         "攻擊/挖掘攻擊:",
-        "上漲/接收/抵消:",
+        "上漲(接收-抵消):",
         "清除:",
         "Spin:",
         "B2B/B3B/PC/HPC:",
@@ -198,22 +261,22 @@ return{
         "多餘操作/finesse率:",
     },
     aboutTexts={
-        "這只是一個普通的方塊遊戲，請勿將此與某帶國家名的事物強行聯繫",
+        "這只是一個普通的*方塊遊戲*",
         "從C2/IO/JS/WWC/KOS等方塊獲得過靈感",
         "",
         "使用LÖVE引擎",
         "錯誤或者建議請附帶截圖發送到內測群或者作者電郵~",
         "僅透過內測QQ群/discord伺服器進行免費下載/更新",
-        "從其他渠道獲得遊戲皆有被修改/加入廣告/植入病毒的風險，程序只申請了振動&網路權限！",
+        "從其他渠道獲得遊戲皆有被修改/加入廣告/植入病毒的風險，程式只申請了振動&網路權限！",
         "若由於被修改的本遊戲產生的各種損失作者概不負責（我怎麼負責啊跟我有什麼關係）",
-        FNNS and"/"or"請從正規途徑獲得最新版，遊戲現為免費，不過有打賞當然感謝啦~",
-        FNNS and"/"or"更多資訊見小z詞典"
+        FNNS and "/" or "請從正規途徑獲得最新版，遊戲現為免費，不過有打賞當然感謝啦~",
+        FNNS and "/" or "更多資訊見小z詞典"
     },
     staff={
         "原作者  MrZ",
         "電郵: 1046101471@qq.com",
         "",
-        "程序, 開發和設計",
+        "程式, 開發和設計",
         "MrZ",
         "",
         "音樂製作使用",
@@ -224,7 +287,7 @@ return{
         "",
         "[POWERED BY LÖVE]",
         "",
-        "程序",
+        "程式",
         "MrZ",
         "ParticleG",
         "Gompyn",
@@ -250,6 +313,12 @@ return{
         "(旋律星萤)",
         "(T0722)",
         "",
+        "插圖",
+        "Miya",
+        "Mono",
+        "Xiaoya",
+        "葉枭",
+        "",
         "音樂設計",
         "MrZ",
         "柒栎流星",
@@ -264,6 +333,7 @@ return{
         "Miya",
         "Xiaoya",
         "Mono",
+        "Flore",
         "MrZ",
         "Trebor",
         "",
@@ -275,9 +345,9 @@ return{
         "ScF",
         "C₂₉H₂₅N₃O₅",
         "NOT_A_ROBOT",
-        "sakurw",
-        "Airun",
-        "幽灵3383",
+        "XMiao",
+        "sakurw, Airun, 幽灵3383",
+        "Shard Nguyễn, Squishy, TVN community",
         "",
         "Performances",
         "Electric283",
@@ -303,6 +373,7 @@ return{
         "huaji2369",
         "Lexitik",
         "Tourahi Anime",
+        "PopUpWaffles",
         "[All other test staff]",
         "…And You!",
     },
@@ -316,15 +387,16 @@ return{
         Cold_Clear [MinusKelvin]
         json.lua [rxi]
         profile.lua [itraykov]
+        sha2 [Egor Skriptunoff]
     ]],
     support="支持作者",
     WidgetText={
         main={
             offline="單人遊戲",
-            qplay="快速開始",
+            qplay="快速開始: ",
             online="網路遊戲",
             custom="自定義",
-            setting="設置",
+            setting="設定",
             stat="統計數據",
             dict="小Z辭典",
             replays="錄影回放",
@@ -343,7 +415,7 @@ return{
             unranked="成績無效",
         },
         pause={
-            setting="設置(S)",
+            setting="設定(S)",
             replay="回放(P)",
             save="保存(O)",
             resume="繼續(esc)",
@@ -352,13 +424,13 @@ return{
             tas="TAS (T)",
         },
         net_menu={
-            league="Tech League",
-            ffa="FFA",
+            galaxim="Galaxim",
             rooms="房間列表",
+            resetPW="重設密碼",
             logout="登出",
         },
-        net_league={
-            match="匹配對手",
+        net_galaxim={
+            match="进入模拟",
         },
         net_rooms={
             password="密碼",
@@ -380,6 +452,7 @@ return{
             visible="能見度",
             freshLimit="鎖延刷新限制",
 
+            sequence="序列模式",
             fieldH="場地高度",
             bufferLimit="緩衝上限",
             heightLimit="高度上限",
@@ -394,7 +467,7 @@ return{
             capacity="房間容量",
             create="創建",
 
-            ospin="O-spin",
+            ospin="TRS O-spin",
             fineKill="100% finesse",
             b2bKill="強制B2B",
             lockout="鎖定在外時失敗",
@@ -416,14 +489,14 @@ return{
             cancel="取消準備",
         },
         setting_game={
-            title="遊戲設置",
+            title="遊戲設定",
             graphic="←畫面",
             sound="音頻→",
             style="風格",
 
-            ctrl="控制設置",
-            key="鍵位設置",
-            touch="觸控設置",
+            ctrl="控制設定",
+            key="鍵位設定",
+            touch="觸控設定",
             showVK="顯示虛擬擊鍵",
             reTime="開局等待時間",
             RS="旋轉系統",
@@ -431,11 +504,10 @@ return{
             sysCursor="使用系統光標",
             autoPause="失去焦點時暫停",
             autoSave="打破紀錄時自動保存",
-            autoLogin="啟動時自動登錄",
             simpMode="簡潔模式",
         },
         setting_video={
-            title="畫面設置",
+            title="畫面設定",
             sound="←音頻",
             game="遊戲→",
 
@@ -472,16 +544,23 @@ return{
             power="電量顯示",
             clean="渲染優化",
             fullscreen="全屏幕",
+            portrait="豎屏",
+            msaa="抗鋸齒等級",
 
             bg_on="普通背景",
             bg_off="無背景",
             bg_custom="應用自定義背景",
+            bg_custom_base64="從剪切板導入圖片\n（Base64編碼的PNG/JPG）",
+            defaultBG="默認背景",
+            resetDbg="改回默認",
+            lockBG="鎖定背景",
+            noTheme="關閉節日主題",
 
             blockSatur="方塊飽和",
             fieldSatur="場地飽和",
         },
         setting_sound={
-            title="音頻設置",
+            title="音頻設定",
             game="←遊戲",
             graphic="畫面→",
 
@@ -501,11 +580,12 @@ return{
             apply="應用",
         },
         setting_control={
-            title="控制設置",
+            title="控制設定",
             preview="預覽",
 
             das="DAS",arr="ARR",
             dascut="DAS打斷",
+            irscut="IRS打斷",
             dropcut="誤硬降打斷",
             sddas="軟降DAS",sdarr="軟降ARR",
             ihs="提前Hold",
@@ -538,7 +618,7 @@ return{
         },
         setting_skin={
             skinSet="方塊皮膚",
-            title="外觀設置",
+            title="外觀設定",
             skinR="重置顏色",
             faceR="重置方向",
         },
@@ -586,7 +666,7 @@ return{
             play_puzzle="開始-拼圖",
 
             reset="重設所有(del)",
-            advance="更多設置(A)",
+            advance="更多設定(A)",
             mod="Mods (F1)",
             field="場地編輯(F)",
             sequence="序列編輯(S)",
@@ -610,7 +690,7 @@ return{
 
             bufferLimit="緩衝上限",
             heightLimit="高度上限",
-            ospin="O-spin",
+            ospin="TRS O-spin",
             fineKill="強制finesse",
             b2bKill="強制B2B",
             lockout="鎖定在外時失敗",
@@ -623,7 +703,7 @@ return{
             subTitle="場地",
 
             any="不定",
-            smart="智能",
+            smart="智慧",
 
             push="增加一行(K)",
             del="清除行(L)",
@@ -683,22 +763,18 @@ return{
         },
         login={
             title="登錄",
-            register="註冊",
-            email="電郵",
-            password="密碼",
-            showEmail="顯示郵箱",
-            keepPW="保存密碼",
-            login="登錄",
+            ticket="登錄口令",
+            authorize="獲取口令",
+            paste="粘貼口令",
+            submit="登錄",
         },
-        register={
-            title="註冊",
-            login="登錄",
-            username="用戶名",
-            email="電郵",
+        reset_password={
+            title="重設密碼",
+            send="發送驗證碼",
+            code="驗證碼",
             password="密碼",
             password2="確認密碼",
-            register="註冊",
-            registering="等待伺服器響應……",
+            setPW="設定密碼",
         },
         account={
             title="賬戶",
@@ -745,7 +821,7 @@ return{
             import="從剪貼板導入",
             unlock="地圖進度",
             data="統計數據",
-            setting="設置",
+            setting="設定",
             vk="虛擬按鍵佈局",
 
             couldSave="雲儲存(測試功能，謹慎使用)",
@@ -761,7 +837,9 @@ return{
         ['sprint_100l']=    {"競速",        "100L",     "清除100行"},
         ['sprint_400l']=    {"競速",        "400L",     "清除400行"},
         ['sprint_1000l']=   {"競速",        "1000L",    "清除1000行"},
-        ['secret_grade']=   {"秘密段位",    "",         "按照提示完成經典的“大於號”拼圖"},
+        ['construct_sg']=   {"建設",        "秘密段位",  "按照提示完成經典的“大於號”拼圖"},
+        ['construct_checker']={"建設",      "棋盤",      "按照提示完成“棋盤”拼圖"},
+        ['construct_invsg']=  {"建設",      "斜綫",      "按照提示完成“斜綫”拼圖"},
         ['sprintPenta']=    {"競速",        "五連塊",     "傷腦筋十八塊"},
         ['sprintMPH']=      {"競速",        "MPH",      "純隨機\n無Next\n無Hold"},
         ['sprint123']=      {"競速",        "M123",     "清除40行，但只有一至三連塊"},
@@ -769,10 +847,11 @@ return{
         ['dig_40l']=        {"挖掘",        "40L",      "挖掘40行"},
         ['dig_100l']=       {"挖掘",        "100L",     "挖掘100行"},
         ['dig_400l']=       {"挖掘",        "400L",     "挖掘400行"},
-        ['dig_eff_10l']=    {"挖掘",        "效率 10L", "挖掘10行用最少的件數"},
-        ['dig_eff_40l']=    {"挖掘",        "效率 40L", "挖掘40行用最少的件數"},
-        ['dig_eff_100l']=   {"挖掘",        "效率 100L","挖掘100行用最少的件數"},
-        ['dig_eff_400l']=   {"挖掘",        "效率 400L","挖掘400行用最少的件數"}, 
+        ['dig_eff_10l']=    {"挖掘",        "效率 10L", "用最少的塊數挖掘10行"},
+        ['dig_eff_40l']=    {"挖掘",        "效率 40L", "用最少的塊數挖掘40行"},
+        ['dig_eff_100l']=   {"挖掘",        "效率 100L","用最少的塊數挖掘100行"},
+        ['dig_eff_400l']=   {"挖掘",        "效率 400L","用最少的塊數挖掘400行"},
+        ['dig_quad_10l']=   {"挖掘",        "消四10L",   "挖掘10行，但只能消四"},
         ['drought_n']=      {"乾旱",        "100L",     "你I沒了"},
         ['drought_l']=      {"乾旱+",       "100L",     "後 媽 發 牌"},
         ['marathon_n']=     {"馬拉松",       "普通",      "200行加速馬拉松"},
@@ -793,8 +872,8 @@ return{
         ['round_h']=        {"回合制",       "困難",      "下棋模式"},
         ['round_l']=        {"回合制",       "瘋狂",      "下棋模式"},
         ['round_u']=        {"回合制",       "極限",      "下棋模式"},
-        ['big_n']=          {"大方塊",       "普通",     "類比10*5場地的玩法(標準尺寸的一半)"},
-        ['big_h']=          {"大方塊",       "困難",     "類比10*5場地的玩法(標準尺寸的一半)"},
+        ['big_n']=          {"大方塊",       "普通",     "類比5x10場地(標準尺寸的一半)"},
+        ['big_h']=          {"大方塊",       "困難",     "類比5x10場地(標準尺寸的一半)"},
         ['master_n']=       {"大師",        "普通",      "20G初心者練習"},
         ['master_h']=       {"大師",        "困難",      "上級者20G挑戰"},
         ['master_m']=       {"大師",        "大師",      "大師20G"},
@@ -803,12 +882,9 @@ return{
         ['master_g']=       {"大師",        "段位考試",    "20G段位考試"},
         ['master_ex']=      {"宗師",        "EX",       "成為方塊大師"},
         ['master_instinct']={"大師",        "本能",      "隱藏當前塊"},
-        ['strategy_e']=     {"策略堆疊",     "簡單",       "20G堆疊中速決策練習"},
+        ['strategy_e_plus']={"策略堆疊",     "簡單+",      "20G堆疊中速決策練習\n無Hold"},
         ['strategy_h']=     {"策略堆疊",     "困難",       "20G堆疊快速決策練習"},
         ['strategy_u']=     {"策略堆疊",     "極限",       "20G堆疊極速決策練習"},
-        ['strategy_e_plus']={"策略堆疊",     "簡單+",      "20G堆疊中速決策練習\n無Hold"},
-        ['strategy_h_plus']={"策略堆疊",     "困難+",      "20G堆疊快速決策練習\n無Hold"},
-        ['strategy_u_plus']={"策略堆疊",     "極限+",      "20G堆疊極速決策練習\n無Hold"},
         ['blind_e']=        {"隱形",        "半隱",      "不強大腦"},
         ['blind_n']=        {"隱形",        "全隱",      "挺強大腦"},
         ['blind_h']=        {"隱形",        "瞬隱",      "很強大腦"},
@@ -831,8 +907,7 @@ return{
         ['defender_l']=     {"防守",        "瘋狂",      "防守練習"},
         ['dig_h']=          {"挖掘",        "困難",      "挖掘練習"},
         ['dig_u']=          {"挖掘",        "極限",      "挖掘練習"},
-        ['clearRush']=      {"清版競速",      "普通",      "All-spin 入門教程\n施工中"},
-        ['c4wtrain_n']=     {"C4W練習",     "普通",      "無 限 連 擊"},
+        ['c4wtrain_n']=     {"C4W練習",     "普通",      "清除100行"},
         ['c4wtrain_l']=     {"C4W練習",     "瘋狂",      "無 限 連 擊"},
         ['pctrain_n']=      {"全清訓練",     "普通",      "簡易PC題集，熟悉全清定式的組合"},
         ['pctrain_l']=      {"全清訓練",     "瘋狂",      "困難PC題集，強算力者進"},
@@ -846,8 +921,8 @@ return{
         ['tech_h_plus']=    {"科研",        "困難+",     "僅允許spin與PC"},
         ['tech_l']=         {"科研",        "瘋狂",      "禁止斷B2B"},
         ['tech_l_plus']=    {"科研",        "瘋狂+",     "僅允許spin與PC"},
-        ['tech_finesse']=   {"科研",        "finesse",      "強制finesse"},
-        ['tech_finesse_f']= {"科研",        "finesse+",     "禁止普通清除，強制finesse"},
+        ['tech_finesse']=   {"科研",        "finesse",    "強制finesse"},
+        ['tech_finesse_f']= {"科研",        "finesse+",   "禁止普通清除，強制finesse"},
         ['tsd_e']=          {"TSD挑戰",     "簡單",      "你能連續做幾個TSD？"},
         ['tsd_h']=          {"TSD挑戰",     "困難",      "你能連續做幾個TSD？"},
         ['tsd_u']=          {"TSD挑戰",     "極限",      "你能連續做幾個TSD？"},
@@ -862,8 +937,10 @@ return{
         ['infinite']=       {"無盡",         "",        "沙盒"},
         ['infinite_dig']=   {"無盡:挖掘",     "",        "挖呀挖呀挖"},
         ['marathon_inf']=   {"馬拉松",       "無盡",      "無盡馬拉松"},
+        ['spinren']=        {"Spin連擊",     "效率",      "掌管效率的神"},
 
         ['custom_clear']=   {"自定義",       "普通"},
         ['custom_puzzle']=  {"自定義",       "拼圖"},
     },
+    pumpkin="我是南瓜",
 }

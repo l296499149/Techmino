@@ -27,7 +27,7 @@ end
 
 local scene={}
 
-function scene.sceneInit()
+function scene.enter()
     state=0
     ang,pos=0,-tau/4
     timer=50
@@ -40,25 +40,26 @@ function scene.sceneInit()
     end
     BG.set('none')
     BGM.play('dream')
+    DiscordRPC.update("Playing polyforge")
 end
 
 function scene.keyDown(key,isRep)
     if isRep then return end
-    if key=='escape'then
-        if tryBack()then
+    if key=='escape' then
+        if tryBack() then
             SCN.back()
         end
-    elseif key=='space'then
-        if state==0 then--main
+    elseif key=='space' then
+        if state==0 then-- main
             if timer==0 then
                 state=1
             end
-        elseif state==3 then--play
+        elseif state==3 then-- play
             local c=(math.floor((pos-ang)*side/tau)-1)%side+1
             if hit[c]==0 then
                 hit[c]=1
                 count=count+1
-                SFX.play(side<26 and'ren_'..rnd(5)or'ren_'..rnd(6,11))
+                SFX.play(side<26 and 'ren_'..rnd(5) or 'ren_'..rnd(6,11))
                 if count>=12 then
                     SFX.play('ren_mega',(count-11)/15)
                 end
@@ -87,12 +88,12 @@ function scene.touchDown()
 end
 
 function scene.update()
-    if state==0 then--main
+    if state==0 then-- main
         ang=ang-.02
         if ang>0 then ang=ang-tau end
         if pos<ang then pos=pos+tau end
         if timer>0 then timer=timer-1 end
-    elseif state==1 or state==2 then--zoom
+    elseif state==1 or state==2 then-- zoom
         ang=ang+.02+timer/260
         pos=pos-.016
         if ang>0 then ang=ang-tau end
@@ -115,7 +116,7 @@ function scene.update()
                 state=3
             end
         end
-    elseif state==3 then--play
+    elseif state==3 then-- play
         ang=ang+.02
         pos=pos-.016
         if ang>0 then
@@ -154,7 +155,7 @@ function scene.draw()
     if state==0 then
         gc.setColor(0,0,0,1-timer/50)
         setFont(30)
-        mStr(MOBILE and"Touch to Start"or"Press space to Start",640,630)
+        mStr(MOBILE and "Touch to Start" or "Press space to Start",640,630)
     else
         gc.setColor(0,0,0,timer/50)
         gc.print("POLYFORGE",20,620)

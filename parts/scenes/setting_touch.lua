@@ -1,12 +1,12 @@
 local gc,ms=love.graphics,love.mouse
-local int,sin=math.floor,math.sin
+local floor,sin=math.floor,math.sin
 local VK_ORG=VK_ORG
 
 local scene={}
 
 local defaultSetSelect
 local snapUnit=1
-local selected--Button selected
+local selected-- Button selected
 
 local function _save1()
     saveFile(VK_ORG,'conf/vkSave1')
@@ -31,12 +31,12 @@ local function _load2()
     end
 end
 
-function scene.sceneInit()
+function scene.enter()
     BG.set('rainbow')
     defaultSetSelect=1
     selected=false
 end
-function scene.sceneBack()
+function scene.leave()
     saveFile(VK_ORG,'conf/virtualkey')
 end
 
@@ -64,21 +64,21 @@ function scene.mouseUp()
     scene.touchUp()
 end
 function scene.mouseMove(_,_,dx,dy)
-    if ms.isDown(1)then
+    if ms.isDown(1) then
         scene.touchMove(nil,nil,dx,dy)
     end
 end
 function scene.touchDown(x,y)
-    selected=_onVK_org(x,y)or selected
+    selected=_onVK_org(x,y) or selected
 end
 function scene.touchUp()
     if selected then
         local B=VK_ORG[selected]
-        B.x,B.y=int(B.x/snapUnit+.5)*snapUnit,int(B.y/snapUnit+.5)*snapUnit
+        B.x,B.y=floor(B.x/snapUnit+.5)*snapUnit,floor(B.y/snapUnit+.5)*snapUnit
     end
 end
 function scene.touchMove(_,_,dx,dy)
-    if selected and not WIDGET.isFocus()then
+    if selected and not WIDGET.isFocus() then
         local B=VK_ORG[selected]
         B.x,B.y=B.x+dx,B.y+dy
     end
@@ -113,8 +113,8 @@ scene.widgetList={
             defaultSetSelect=defaultSetSelect%5+1
             selected=false
         end},
-    WIDGET.newSelector{name='snap', x=750,y=90,w=200,h=80,color='Y',list={1,10,20,40,60,80},disp=function()return snapUnit end,code=function(i)snapUnit=i end},
-    WIDGET.newButton{name='option', x=530,y=190,w=200,h=80,font=60,fText=CHAR.icon.menu,code=function()SCN.go('setting_touchSwitch')end},
+    WIDGET.newSelector{name='snap', x=750,y=90,w=200,h=80,color='Y',list={1,10,20,40,60,80},disp=function() return snapUnit end,code=function(i) snapUnit=i end},
+    WIDGET.newButton{name='option', x=530,y=190,w=200,h=80,font=60,fText=CHAR.icon.menu,code=function() SCN.go('setting_touchSwitch') end},
     WIDGET.newButton{name='back',   x=750,y=190,w=200,h=80,sound='back',font=60,fText=CHAR.icon.back,code=backScene},
     WIDGET.newKey{name='save1',     x=475,y=290,w=90,h=70,code=_save1,font=45,fText=CHAR.icon.saveOne},
     WIDGET.newKey{name='load1',     x=585,y=290,w=90,h=70,code=_load1,font=45,fText=CHAR.icon.loadOne},
@@ -132,7 +132,7 @@ scene.widgetList={
         hideF=function()
             return not selected
         end},
-    WIDGET.newKey{name='shape',     x=640,y=600,w=200,h=80,code=function()SETTING.VKSkin=VK.nextShape()end},
+    WIDGET.newKey{name='shape',     x=640,y=600,w=200,h=80,code=function() SETTING.VKSkin=VK.nextShape() end},
 }
 
 return scene

@@ -1,6 +1,5 @@
-return{
+return {
     fallback='en',
-
     loadText={
         loadSFX="#!#",
         loadSample="#~#",
@@ -22,7 +21,8 @@ return{
     atkModeName={"?","(  )","!","←→"},
     royale_remain="$1 ~",
     cmb={nil,"!","!!","!!!","!!!!","!!!!!","!!!!!!","!!!!!!!","!!!!!!!!","!!!!!!!!!","!!!!!!!!!!","!!!!!!!!!!!","!!!!!!!!!!!!","!!!!!!!!!!!!!","!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!!!!!","!!!!!!!!!!!!!!!!!!!!",},
-    spin=" ~",
+    spinNC=" ~",
+    spin=" ~ ",
     clear={"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","20+"},
     cleared="",
     mini="v",b2b="^ ",b3b="^^ ",
@@ -38,10 +38,14 @@ return{
     maxspeed="!!!",
     speedup="~!~",
     missionFailed="-X_X-",
+    infHeightOn="∞↑ "..CHAR.icon.checkMark,
+    infHeightOff="∞↑ "..CHAR.icon.crossMark,
+    infHeightHint=CHAR.icon.checkMark.."/"..CHAR.icon.crossMark..": F₁",
+    highestGrade="(↑: $1)",
 
     win=": )",
     lose=": (",
-
+    torikan=": /",
     finish="&",
     gamewin=">>",
     gameover="x",
@@ -53,15 +57,18 @@ return{
 
     page=":",
 
+    ai_puzzle="X!!!",
+    ai_mission="X!!!",
+    ai_badPiece="X!!!",
     cc_fixed="CC X!!!",
     cc_swap="CC X!!!",
-    ai_prebag="X!!!",
-    ai_mission="X!!!",
+    cc_solid="CC X!!!",
+    cc_field_too_high="CC X!!!",
     needRestart="!!*#R#*!!",
 
     loadError_errorMode="'$1' ↑x!: no load mode '$2'",
     loadError_read="'$1' ↑x!: read failed",
-    loadError_noFile="'$1' ↑oading failed no file:",
+    loadError_noFile="'$1' loading failed no file:",
     loadError_other="'$1' ↑x!: $2",
     loadError_unknown="'$1' ↑x!: unknown reason",
 
@@ -77,6 +84,8 @@ return{
     dataCorrupted="XXXXX",
     pasteWrongPlace="_?X.",
     -- noFile="File not found",
+    -- invalidSequence="Invalid sequence mode",
+    -- tooHighField="Field data exceeded 126 lines discarded",
 
     nowPlaying="~:",
 
@@ -100,7 +109,7 @@ return{
         "□:",
         "-/↓:",
         "→/↓→:",
-        "←:",
+        "↑(←-↓):",
         "□↓:",
         "~↓:",
         "^^/^^^/#<>#/<>:",
@@ -135,7 +144,7 @@ return{
     WidgetText={
         main={
             offline="!",
-            qplay="(!)",
+            qplay="(!): ",
             online="!!!",
             custom="_?!",
             setting="_?_",
@@ -162,12 +171,12 @@ return{
             tas="#&; (T)",
         },
         net_menu={
-            league="TL",
-            ffa="FFA",
+            -- galaxim="Galaxim", -- Galaxy+Simulation
             rooms="< >",
+            resetPW="R ***",
             logout="@_@x",
         },
-        net_league={
+        net_galaxim={
             match="!",
         },
         net_rooms={
@@ -190,6 +199,7 @@ return{
             visible="?=",
             freshLimit="@",
 
+            sequence="$",
             fieldH="↑[]↓",
             bufferLimit="^↑",
             heightLimit="#↑",
@@ -212,7 +222,7 @@ return{
             deepDrop="\\↓↓/",
             bone="[]",
 
-            eventSet="Rule Set",
+            eventSet="Ruleset",
 
             holdMode="? [ ]",
             nextCount="→",
@@ -234,14 +244,13 @@ return{
             ctrl="=?=",
             key="=?",
             touch="_?",
-            showVK="--?",
+            showVK="-- ?",
             reTime="3-2-1",
             RS="''?",
             menuPos="←M→?",
             sysCursor="?→*",
             autoPause="A||",
             autoSave="!!!>%",
-            autoLogin="#Log in#",
             simpMode=".",
         },
         setting_video={
@@ -258,7 +267,7 @@ return{
             ghost="__↓__",
             center="+",
             grid="#",
-            lineNum="--No.",
+            lineNum="-- No.",
 
             lockFX="↓_~",
             dropFX="↓~",
@@ -282,10 +291,17 @@ return{
             power="+.",
             clean="[]→→O",
             fullscreen="|←→|",
+            portrait="↑▉↓",
+            msaa="/ _",
 
             bg_on="__?__",
             bg_off="__.__",
             bg_custom="__!__",
+            bg_custom_base64=CHAR.icon.copy.."__!__\n(PNG/JPG ↓ Base64)",
+            defaultBG="__$0__",
+            resetDbg="R$0",
+            lockBG="__↓__",
+            noTheme="\\^_^/ "..CHAR.icon.crossMark,
 
             blockSatur="==#0x",
             fieldSatur="[]#0x",
@@ -315,6 +331,7 @@ return{
 
             das="x---x x x",arr="x   x-x-x",
             dascut="x x ↓___x x",
+            irscut="'' !''x",
             dropcut="↓_ !↓↓x",
             sddas="↓---↓ ↓ ↓",sdarr="↓   ↓-↓-↓",
             ihs="![ ]",
@@ -401,7 +418,7 @@ return{
             sequence="Edit Sequence (S)",
             mission="Edit Mission (M)",
 
-            eventSet="Rule Set",
+            eventSet="Ruleset",
 
             holdMode="? [ ]",
             nextCount="→",
@@ -484,23 +501,19 @@ return{
             label="...",
         },
         login={
-            title="Log in",
-            register="Sign up",
-            email="@",
-            password="*",
-            showEmail="?",
-            keepPW="!",
-            login="Log in",
+            title="Sign In",
+            ticket="***",
+            authorize="**?",
+            paste="_*",
+            submit="<!>",
         },
-        register={
-            title="Sign up",
-            login="Log in",
-            username="#",
-            email="@",
+        reset_password={
+            title="R ***",
+            send="→",
+            code="←",
             password="*",
             password2="*",
-            register="Sign up",
-            registering="......",
+            setPW="##",
         },
         account={
             title="@_@",
@@ -509,7 +522,7 @@ return{
             color="~~~",
             invis="???",
             slide="~_~",
-            pathVis="--==>",
+            pathVis="-- ==>",
             revKB="Reverse",
         },
         app_schulteG={
@@ -542,7 +555,7 @@ return{
     getTip=function()
         local L="!@#$%^&*()-=_+[]{}\\|;:\'\",<.>/?"
         local s=""
-        for _=1,math.random(16,26)do
+        for _=1,math.random(16,26) do
             local p=math.random(#L)
             s=s..L:sub(p,p)
         end

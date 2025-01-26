@@ -15,17 +15,17 @@ local function check_rise(P)
         if L==0 then
             P:_showText(text.awesome,0,-120,80,'beat',.6)
             SFX.play('pc')
-            if BG.cur=='wing'then BG.send(26)end
+            if BG.cur=='wing' then BG.send(26) end
             for _=1,8 do
                 P:garbageRise(13,1,generateLine(P.holeRND:random(10)))
             end
         else
-            if BG.cur=='wing'then BG.send(#P.clearedRow)end
+            if BG.cur=='wing' then BG.send(#P.clearedRow) end
         end
     end
 end
 
-return{
+return {
     env={
         drop=1e99,lock=1e99,
         infHold=true,
@@ -33,9 +33,9 @@ return{
         hook_drop=check_rise,
         mesDisp=function(P)
             setFont(45)
-            mStr(P.stat.dig,63,190)
-            mStr(P.stat.atk,63,310)
-            mStr(("%.2f"):format(P.stat.atk/P.stat.row),63,420)
+            GC.mStr(P.stat.dig,63,190)
+            GC.mStr(P.stat.atk,63,310)
+            GC.mStr(("%.2f"):format(P.stat.atk/P.stat.row),63,420)
             mText(TEXTOBJ.line,63,243)
             mText(TEXTOBJ.atk,63,363)
             mText(TEXTOBJ.eff,63,475)

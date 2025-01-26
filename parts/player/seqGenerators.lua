@@ -1,32 +1,28 @@
 local ins,rem=table.insert,table.remove
-local yield=YIELD
+local yield=coroutine.yield
 
 local seqGenerators={
-    none=function()while true do yield()end end,
-    bag=function(P,seq0)
-        local rndGen=P.seqRND
+    none=function() end,
+    bag=function(rndGen,seq0)
         local len=#seq0
         local bag={}
         while true do
-            while #P.nextQueue<10 do
-                if #bag==0 then
-                    for i=1,len do
-                        bag[i]=seq0[len-i+1]
-                    end
+            if #bag==0 then
+                yield(nil)
+                for i=1,len do
+                    bag[i]=seq0[len-i+1]
                 end
-                P:getNext(rem(bag,rndGen:random(#bag)))
             end
-            yield()
+            yield(rem(bag,rndGen:random(#bag)))
         end
     end,
-    bagES=function(P,seq0)
-        local rndGen=P.seqRND
+    bagES=function(rndGen,seq0)
         local len=#seq0
         local bag=TABLE.shift(seq0)
-        do--Get a good first-bag
-            --Shuffle
-            for i=1,len-1 do ins(bag,rem(bag,rndGen:random(len-i+1)))end
-            --Skip Uncomfortable minoes
+        do-- Get a good first-bag
+            -- Shuffle
+            for i=1,len-1 do ins(bag,rem(bag,rndGen:random(len-i+1))) end
+            -- Skip Uncomfortable minoes
             for _=1,len-1 do
                 if
                     bag[1]==1 or bag[1]==2 or bag[1]==6 or bag[1]==8 or bag[1]==9 or
@@ -39,64 +35,60 @@ local seqGenerators={
                     break
                 end
             end
-            --Finish
-            for i=1,len do P:getNext(bag[i])end
+            -- Finish
+            yield(nil)
+            for i=1,len do yield(bag[i]) end
         end
         bag={}
         while true do
-            while #P.nextQueue<10 do
-                if #bag==0 then
-                    for i=1,len do
-                        bag[i]=seq0[len-i+1]
-                    end
+            if #bag==0 then
+                yield(nil)
+                for i=1,len do
+                    bag[i]=seq0[len-i+1]
                 end
-                P:getNext(rem(bag,rndGen:random(#bag)))
             end
-            yield()
+            yield(rem(bag,rndGen:random(#bag)))
         end
     end,
-    his=function(P,seq0)
-        local rndGen=P.seqRND
+    his=function(rndGen,seq0)
         local len=#seq0
         local hisLen=math.ceil(len*.5)
         local history=TABLE.new(0,hisLen)
         while true do
-            while #P.nextQueue<10 do
-                local r
-                for _=1,hisLen do--Reroll up to [hisLen] times
-                    r=rndGen:random(len)
-                    for i=1,hisLen do
-                        if r==history[i]then
-                            goto CONTINUE_rollAgain
-                        end
+            local r
+            for _=1,hisLen do-- Reroll up to [hisLen] times
+                r=rndGen:random(len)
+                local rollAgain
+                for i=1,hisLen do
+                    if r==history[i] then
+                        rollAgain=true
+                        break-- goto CONTINUE_rollAgain
                     end
-                    do break end
-                    ::CONTINUE_rollAgain::
                 end
-                if history[1]~=0 then
-                    P:getNext(seq0[r])
-                end
-                rem(history,1)
-                ins(history,r)
+                if not rollAgain then break end
+                -- ::CONTINUE_rollAgain::
             end
-            yield()
+            if history[1]~=0 then
+                yield(seq0[r])
+            end
+            rem(history,1)
+            ins(history,r)
         end
     end,
-    hisPool=function(P,seq0)
-        local rndGen=P.seqRND
+    hisPool=function(rndGen,seq0)
         local len=#seq0
         local hisLen=math.ceil(len*.5)
-        local history=TABLE.new(0,hisLen)--Indexes of mino-index
+        local history=TABLE.new(0,hisLen)-- Indexes of mino-index
 
         local poolLen=5*len
-        local droughtTimes=TABLE.new(len,len)--Drought times of seq0
-        local pool={}for i=1,len do for _=1,5 do ins(pool,i)end end--5 times indexes of seq0
+        local droughtTimes=TABLE.new(len,len)-- Drought times of seq0
+        local pool={} for i=1,len do for _=1,5 do ins(pool,i) end end-- 5 times indexes of seq0
         local function _poolPick()
             local r=rndGen:random(poolLen)
             local res=pool[r]
 
-            --Find droughtest(s) minoes
-            local droughtList={1}--Droughtst minoes' indexes of seq0
+            -- Find droughtest(s) minoes
+            local droughtList={1}-- Droughtst minoes' indexes of seq0
             local maxTime=droughtTimes[1]
             for i=2,len do
                 if droughtTimes[i]>maxTime then
@@ -111,11 +103,11 @@ local seqGenerators={
                 end
             end
 
-            --Update droughtTimes
+            -- Update droughtTimes
             for i=1,len do droughtTimes[i]=droughtTimes[i]+1 end
             droughtTimes[res]=0
 
-            --Update pool
+            -- Update pool
                 -- print("Rem "..res)
             pool[r]=droughtList[rndGen:random(#droughtList)]
                 -- print("Add "..pool[r])
@@ -124,158 +116,200 @@ local seqGenerators={
         end
 
         while true do
-            while #P.nextQueue<10 do
-                    -- print"======================"
-                --Pick a mino from pool
-                local tryTime=0
-                ::REPEAT_pickAgain::
-                local r=_poolPick()--Random mino-index in pool
+                -- print"======================"
+            -- Pick a mino from pool
+            local tryTime=0
+            local r
+            repeat
+                r=_poolPick()-- Random mino-index in pool
+                local duplicated
                 for i=1,len do
-                    if r==history[i]then
-                        tryTime=tryTime+1
-                        if tryTime<hisLen then
-                            goto REPEAT_pickAgain
-                        end
+                    if r==history[i] then
+                        duplicated=true
+                        break
                     end
                 end
+                tryTime=tryTime+1
+            until not duplicated or tryTime>hisLen
 
-                --Give mino to player & update history
-                if history[1]~=0 then
-                    P:getNext(seq0[r])
-                end
-                rem(history,1)
-                ins(history,r)
-                    -- print("Player GET: "..r)
-                    -- print("History: "..table.concat(history,","))
-                    -- local L=TABLE.new("",len)
-                    -- for _,v in next,pool do L[v]=L[v].."+"end
-                    -- for i=1,#L do print(i,droughtTimes[i],L[i])end
+            -- Give mino to player & update history
+            if history[1]~=0 then
+                yield(seq0[r])
             end
-            yield()
+            rem(history,1)
+            ins(history,r)
+                -- print("Player GET: "..r)
+                -- print("History: "..table.concat(history,","))
+                -- local L=TABLE.new("",len)
+                -- for _,v in next,pool do L[v]=L[v].."+" end
+                -- for i=1,#L do print(i,droughtTimes[i],L[i]) end
         end
     end,
-    c2=function(P,seq0)
-        local rndGen=P.seqRND
+    c2=function(rndGen,seq0)
         local len=#seq0
         local weight=TABLE.new(0,len)
 
         while true do
-            while #P.nextQueue<10 do
-                local maxK=1
-                for i=1,len do
-                    weight[i]=weight[i]*.5+rndGen:random()
-                    if weight[i]>weight[maxK]then
-                        maxK=i
-                    end
+            local maxK=1
+            for i=1,len do
+                weight[i]=weight[i]*.5+rndGen:random()
+                if weight[i]>weight[maxK] then
+                    maxK=i
                 end
-                weight[maxK]=weight[maxK]/3.5
-                P:getNext(seq0[maxK])
             end
-            yield()
+            weight[maxK]=weight[maxK]/3.5
+            yield(seq0[maxK])
         end
     end,
-    rnd=function(P,seq0)
+    rnd=function(rndGen,seq0)
         if #seq0==1 then
             local i=seq0[1]
             while true do
-                while #P.nextQueue<10 do P:getNext(i)end
-                yield()
+                yield(i)
             end
         else
-            local rndGen=P.seqRND
             local len=#seq0
             local last=0
             while true do
-                while #P.nextQueue<10 do
-                    local r=rndGen:random(len-1)
-                    if r>=last then
-                        r=r+1
-                    end
-                    P:getNext(seq0[r])
-                    last=r
+                local r=rndGen:random(len-1)
+                if r>=last then
+                    r=r+1
                 end
-                yield()
+                yield(seq0[r])
+                last=r
             end
         end
     end,
-    mess=function(P,seq0)
-        local rndGen=P.seqRND
+    mess=function(rndGen,seq0)
         while true do
-            while #P.nextQueue<10 do
-                P:getNext(seq0[rndGen:random(#seq0)])
-            end
-            yield()
+            yield(seq0[rndGen:random(#seq0)])
         end
     end,
-    reverb=function(P,seq0)
-        local rndGen=P.seqRND
+    reverb=function(rndGen,seq0)
         local bufferSeq,bag={},{}
         while true do
-            while #P.nextQueue<10 do
-                if #bag==0 then
-                    for i=1,#seq0 do bufferSeq[i]=seq0[i]end
+            if #bag==0 then
+                yield(nil)
+                for i=1,#seq0 do bufferSeq[i]=seq0[i] end
+                repeat
+                    local r=rem(bufferSeq,rndGen:random(#bag))
+                    local p=1
                     repeat
-                        local r=rem(bufferSeq,rndGen:random(#bag))
-                        local p=1
-                        repeat
-                            ins(bag,r)
-                            p=p-.15-rndGen:random()
-                        until p<0
-                    until #bufferSeq==0
-                    for i=1,#bag do
-                        bufferSeq[i]=bag[i]
-                    end
+                        ins(bag,r)
+                        p=p-.15-rndGen:random()
+                    until p<0
+                until #bufferSeq==0
+                for i=1,#bag do
+                    bufferSeq[i]=bag[i]
                 end
-                P:getNext(rem(bag,rndGen:random(#bag)))
             end
-            yield()
+            yield(rem(bag,rndGen:random(#bag)))
         end
     end,
-    loop=function(P,seq0)
+    loop=function(rndGen,seq0)
         local len=#seq0
         local bag={}
         while true do
-            while #P.nextQueue<10 do
-                if #bag==0 then
-                    for i=1,len do
-                        bag[i]=seq0[len-i+1]
-                    end
+            if #bag==0 then
+                yield(nil)
+                for i=1,len do
+                    bag[i]=seq0[len-i+1]
                 end
-                P:getNext(rem(bag))
             end
-            yield()
+            yield(rem(bag))
         end
     end,
-    fixed=function(P,seq0)
-        local seq={}
-        for i=#seq0,1,-1 do
-            ins(seq,seq0[i])
+    fixed=function(rndGen,seq0)
+        for i=1,#seq0 do
+            yield(seq0[i])
         end
-        while true do
-            while #P.nextQueue<10 do
-                if seq[1]then
-                    P:getNext(rem(seq))
+    end,
+    bagP1inf=function(rndGen,seq0)
+        local len=#seq0
+        local function new()
+            local res={}
+            local higher=nil
+            local higher_dist={}
+            for i=1,len do
+                higher_dist[i]=1
+            end
+            local remaining=len+1
+            local unknown={}
+            local extra=-1
+            local function init()
+                yield(nil)
+                for i=1,len do
+                    unknown[i]=1
+                end
+                remaining=len+1
+                extra=-1
+            end
+            init()
+            function res.next_dist()
+                if extra>=0 then
+                    return remaining,unknown
+                end
+                local temp={}
+                local temp_sum=0
+                for i=1,len do
+                    local item=higher_dist[i]*(2-unknown[i])
+                    temp[i]=item
+                    temp_sum=temp_sum+item
+                end
+                local sum=0
+                for i=1,len do
+                    temp[i]=temp[i]+temp_sum*unknown[i]
+                    sum=sum+temp[i]
+                end
+                return sum,temp
+            end
+            function res.update(i)
+                if unknown[i]==0 then
+                    assert(extra<0,"extra should be -1")
+                    extra=i
                 else
+                    unknown[i]=0
+                end
+                remaining=remaining-1
+                if remaining>0 then
+                    return
+                end
+                if higher==nil then
+                    higher=new()
+                end
+                higher.update(extra)
+                local _
+                _,higher_dist=higher.next_dist()
+                init()
+            end
+            return res
+        end
+        local dist=new()
+        while true do
+            local sum,mydist=dist.next_dist()
+            local r=rndGen:random(sum)
+            for i=1,len do
+                r=r-mydist[i]
+                if r<=0 then
+                    yield(seq0[i])
+                    dist.update(i)
                     break
                 end
             end
-            yield()
         end
     end,
 }
-return function(P)--Return a piece-generating function for player P
-    local s=P.gameEnv.sequence
-    if type(s)=='function'then
+return function(s)-- Return a piece-generating function for player P
+    if type(s)=='function' then
         return s
-    elseif type(s)=='string'and seqGenerators[s]then
+    elseif type(s)=='string' and seqGenerators[s] then
         return seqGenerators[s]
     else
         MES.new('warn',
-            type(s)=='string'and
+            type(s)=='string' and
             "No sequence mode called "..s or
             "Wrong sequence generator"
         )
-        P.gameEnv.sequence='bag'
-        return seqGenerators.bag
+        return seqGenerators.bag,true
     end
 end

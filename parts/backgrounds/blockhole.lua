@@ -1,4 +1,4 @@
---blockhole
+-- blockhole
 local gc=love.graphics
 local gc_clear,gc_replaceTransform=gc.clear,gc.replaceTransform
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
@@ -19,9 +19,9 @@ function back.update()
     t=t-1
     if t==0 then
         local S={
-            ang=6.2832*rnd(),
+            ang=MATH.tau*rnd(),
             d=SCR.rad*1.05/2,
-            rotate=6.2832*rnd(),
+            rotate=MATH.tau*rnd(),
             va=.05-rnd()*.1,
             size=SCR.rad*(2+rnd()*3)/100,
             texture=SKIN.lib[SETTING.skinSet][rnd(16)],
@@ -44,14 +44,14 @@ function back.draw()
     gc_clear(.1,.1,.1)
     gc_replaceTransform(SCR.xOy_m)
 
-    --Squares
+    -- Squares
     gc_setColor(1,1,1,.2)
     for i=1,#squares do
         local S=squares[i]
         gc_draw(S.texture,S.d*cos(S.ang),S.d*sin(S.ang),S.rotate,S.size*.026,nil,15,15)
     end
 
-    --blockhole
+    -- blockhole
     gc_setColor(.07,.07,.07)
     gc_circle('fill',0,0,157)
     gc_setLineWidth(6)

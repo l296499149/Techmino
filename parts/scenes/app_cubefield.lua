@@ -1,5 +1,5 @@
 local gc,kb,tc=love.graphics,love.keyboard,love.touch
-local rnd,int,abs=math.random,math.floor,math.abs
+local rnd,floor,abs=math.random,math.floor,math.abs
 local max,min=math.max,math.min
 local setFont,mStr=FONT.set,GC.mStr
 
@@ -27,7 +27,7 @@ local score
 local sunH,color,rot
 
 local function near(o,t)
-    return o>t and max(o-.01,t)or o<t and min(o+.01,t)or o
+    return o>t and max(o-.01,t) or o<t and min(o+.01,t) or o
 end
 local function hurt(i)
     life=life-i
@@ -36,7 +36,7 @@ local function hurt(i)
         menu,play=1,false
         speed=speed*.5
         moveDir=0
-        score=int(score)
+        score=floor(score)
         SFX.play('clear_4')
     else
         SFX.play('clear_2')
@@ -45,9 +45,9 @@ end
 
 local scene={}
 
-function scene.sceneInit()
-    cubesX={}for i=1,40 do cubesX[i]=rnd()*16-8 end
-    cubesY={}for i=1,40 do cubesY[i]=i/40*9 end
+function scene.enter()
+    cubesX={} for i=1,40 do cubesX[i]=rnd()*16-8 end
+    cubesY={} for i=1,40 do cubesY[i]=i/40*9 end
     lastCube=1
     player,moveDir=0,0
     life,life1,inv=0,0,false
@@ -59,6 +59,7 @@ function scene.sceneInit()
     gc.setLineJoin('bevel')
     BGM.play('push')
     BG.set('none')
+    DiscordRPC.update("Playing Cubefield")
 end
 
 function scene.touchDown(x)
@@ -95,16 +96,16 @@ function scene.touchUp(x)
 end
 function scene.keyDown(key,isRep)
     if isRep then return end
-    if key=='escape'then
+    if key=='escape' then
         SCN.back()
     elseif play then
-        if key=='left'or key=='a'then
+        if key=='left' or key=='a' then
             moveDir=-1
-        elseif key=='right'or key=='d'then
+        elseif key=='right' or key=='d' then
             moveDir=1
         end
     else
-        if key=='space'and ct==60 then
+        if key=='space' and ct==60 then
             menu=-1
             speed=1
             level=1
@@ -113,10 +114,10 @@ function scene.keyDown(key,isRep)
 end
 function scene.keyUp(key)
     if play then
-        if key=='left'or key=='a'then
-            moveDir=kb.isDown('right','d')and 1 or 0
-        elseif key=='right'or key=='d'then
-            moveDir=kb.isDown('left','a')and -1 or 0
+        if key=='left' or key=='a' then
+            moveDir=kb.isDown('right','d') and 1 or 0
+        elseif key=='right' or key=='d' then
+            moveDir=kb.isDown('left','a') and -1 or 0
         end
     end
 end
@@ -125,7 +126,7 @@ function scene.update(dt)
     if dt>.06 then dt=.06 end
     dt=dt*600
 
-    --Update cubes' position
+    -- Update cubes' position
     local cy=cubesY
     local step=speed*dt*.005
     for i=1,40 do
@@ -141,7 +142,7 @@ function scene.update(dt)
         end
     end
 
-    --Collision detect
+    -- Collision detect
     if play then
         for j=1,40 do
             local i=(j+lastCube-2)%40+1
@@ -159,7 +160,7 @@ function scene.update(dt)
         end
     end
 
-    --Screen rotation
+    -- Screen rotation
     if moveDir~=0 then
         player=player+moveDir*dt*.003*speed^.8
         if abs(rot)<.16 or moveDir*rot>0 then
@@ -196,19 +197,19 @@ function scene.update(dt)
             menu=false
         end
     elseif menu==-1 then
-        for i=1,3 do color[i]=near(color[i],cubeColor[1][i])end
+        for i=1,3 do color[i]=near(color[i],cubeColor[1][i]) end
         for i=1,40 do cubesY[i]=cubesY[i]-(70-ct)*.003 end
         if sunH>0 then
             sunH=max(sunH*.85-1,0)
         end
         ct=ct-1
         if ct==0 then
-            local t=love.system.getClipboardText()
-            if type(t)=='string'then
+            local t=CLIPBOARD.get()
+            if type(t)=='string' then
                 t=t:lower():match("^s=(%d+)$")
-                t=t and tonumber(t)and tonumber(t)>0 and tonumber(t)<=8000 and int(tonumber(t))
+                t=t and tonumber(t) and tonumber(t)>0 and tonumber(t)<=8000 and floor(tonumber(t))
             end
-            score=type(t)=='number'and t or 0
+            score=type(t)=='number' and t or 0
             life=1000
             play,menu=true,false
             inv=90
@@ -220,42 +221,42 @@ local function _sunStencil()
     gc.rectangle('fill',-60,-440,120,120)
 end
 function scene.draw()
-    --Health bar
+    -- Health bar
     if life1>0 then
         gc.setColor(1,0,0)
         gc.rectangle('fill',640-life1*.64,710,life1*1.28,10)
     end
 
-    --Draw player
+    -- Draw player
     if play and inv%8<4 then
         gc.setColor(COLOR.Z)
         gc.rectangle('fill',620,670,40,40)
     end
 
-    --Set screen rotation
+    -- Set screen rotation
     gc.push('transform')
     gc.translate(640,690)
     gc.rotate(rot)
 
-    --Draw sun
+    -- Draw sun
     gc.setStencilTest('notequal',1)
     gc.stencil(_sunStencil)
     gc.setColor(.7,.5,.3)
     gc.circle('fill',0,-380-sunH,60)
     gc.setStencilTest()
 
-    --Draw direction
+    -- Draw direction
     if play then
         gc.setLineWidth(3)
         gc.setColor(1,1,1,.1)
         gc.polygon('fill',-15,30,0,-440,15,30)
     end
 
-    --Draw Horizon/Direction
+    -- Draw Horizon/Direction
     gc.setColor(COLOR.Z)
     gc.line(-942,-440,942,-440)
 
-    --Draw cubes
+    -- Draw cubes
     for j=1,40 do
         local i=(j+lastCube-2)%40+1
         local Y=cubesY[i]
@@ -273,11 +274,11 @@ function scene.draw()
         end
     end
 
-    --Draw menu
+    -- Draw menu
     if play then
         setFont(60)
-        mStr(int(score),-300,-640)
-        mStr(int(score),300,-640)
+        mStr(floor(score),-300,-640)
+        mStr(floor(score),300,-640)
         if score%1000>920 then
             gc.setColor(1,1,1,abs(score%1000-970)*8)
             setFont(70)
@@ -312,7 +313,7 @@ function scene.draw()
             mStr("Score : "..score,0,-350)
         end
 
-        mStr(MOBILE and"Touch to Start"or"Press space to Start",0,-160)
+        mStr(MOBILE and "Touch to Start" or "Press space to Start",0,-160)
     end
     gc.pop()
 end

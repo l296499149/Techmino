@@ -1,10 +1,10 @@
 local gc=love.graphics
-local rnd,int,max=math.random,math.floor,math.max
+local rnd,floor,max=math.random,math.floor,math.max
 local setFont,mStr=FONT.set,GC.mStr
 
---This mini-game is written for TI-nSpire CX CAS many years ago.
---Deliberately, some grammar mistakes and typos in the 'great' list remained.
---So no need to correct them.
+-- This mini-game is written for TI-nSpire CX CAS many years ago.
+-- Deliberately, some grammar mistakes and typos in the 'great' list remained.
+-- So no need to correct them.
 
 local perfect={"Perfect!","Excellent!","Nice!","Good!","Great!","Just!","300"}
 local great={"Pay attention!","Be carefully!","Teacher behind you!","Feel tired?","You are in danger!","Do your homework!","A good game!","Minecraft!","y=ax^2+bx+c!","No music?","Internet unavailable.","It's raining!","Too hard!","Shorter?","Higher!","English messages!","Hi!","^_^","Drop!","Colorful!",":)","100$","~~~wave~~~","★★★","中文!","NOW!!!!!","Also try the TEN!","I'm a programer!","Also try minesweeperZ!","This si Dropper!","Hold your calculatoor!","Look! UFO!","Bonjour!","[string]","Author:MrZ","Boom!","PvZ!","China!","TI-nspire!","I love LUA!"}
@@ -16,7 +16,7 @@ local highScore,highFloor=0,0
 local move,base
 local state,message
 local speed
-local score,floor,camY
+local score,floorS,camY
 local color1,color2={},{}
 
 local function restart()
@@ -25,7 +25,7 @@ local function restart()
     message="Welcome"
     speed=10
     score=0
-    floor=0
+    floorS=0
     camY=0
     for i=1,3 do
         color1[i]=rnd()
@@ -33,18 +33,19 @@ local function restart()
     end
 end
 
-function scene.sceneInit()
+function scene.enter()
     restart()
     state='menu'
     BGM.play('hang out')
     BG.set('space')
+    DiscordRPC.update("Playing Dropper")
 end
 
 function scene.keyDown(key,isRep)
     if isRep then return end
-    if key=='space'or key=='return'then
-        if state=='move'then
-            if floor>0 then
+    if key=='space' or key=='return' then
+        if state=='move' then
+            if floorS>0 then
                 if move.x<base.x then
                     move.x=move.x+10
                 elseif move.x>base.x then
@@ -53,16 +54,16 @@ function scene.keyDown(key,isRep)
             end
             SFX.play('hold')
             state='drop'
-        elseif state=='dead'then
+        elseif state=='dead' then
             move.x,move.y,move.l=1e99,0,0
             base.x,base.y,base.l=1e99,0,0
             state='scroll'
-        elseif state=='menu'then
+        elseif state=='menu' then
             restart()
             state='move'
         end
-    elseif key=='escape'then
-        if tryBack()then
+    elseif key=='escape' then
+        if tryBack() then
             SCN.back()
         end
     end
@@ -77,13 +78,13 @@ function scene.touchDown()
 end
 
 function scene.update()
-    if state=='move'then
+    if state=='move' then
         move.x=move.x+speed
         if speed<0 and move.x<=0 or speed>0 and move.x+move.l>=1280 then
             SFX.play('lock')
             speed=-speed
         end
-    elseif state=='drop'then
+    elseif state=='drop' then
         move.y=move.y+18
         if move.y>=660 then
             if move.x>base.x+base.l or move.x+move.l<base.x then
@@ -92,13 +93,13 @@ function scene.update()
             else
                 move.y=660
                 SFX.play('clear_1')
-                if floor>0 and move.x==base.x then
+                if floorS>0 and move.x==base.x then
                     SFX.play('ren_mega')
                 end
                 state='shorten'
             end
         end
-    elseif state=='shorten'then
+    elseif state=='shorten' then
         if move.x>base.x+base.l or move.x+move.l<base.x then
             state='die'
         elseif move.x<base.x then
@@ -109,13 +110,13 @@ function scene.update()
         else
             state='climb'
         end
-    elseif state=='climb'then
+    elseif state=='climb' then
         if base.y<720 then
             move.y=move.y+3
             base.y=base.y+3
             camY=camY+3
         else
-            if move.x==base.x and move.x+move.l==base.x+base.l and floor~=0 then
+            if move.x==base.x and move.x+move.l==base.x+base.l and floorS~=0 then
                 score=score+2
                 message=perfect[rnd(1,3)]
             else
@@ -129,7 +130,7 @@ function scene.update()
             base.x=move.x
             base.y=690
             base.l=move.l
-            floor=floor+1
+            floorS=floorS+1
             if rnd()<.5 then
                 move.x=-move.l
                 speed=10
@@ -137,18 +138,18 @@ function scene.update()
                 move.x=1280
                 speed=-10
             end
-            move.y=rnd(max(260-floor*4,60),max(420-floor*5,100))
+            move.y=rnd(max(260-floorS*4,60),max(420-floorS*5,100))
             state='move'
         end
-    elseif state=='die'then
+    elseif state=='die' then
         move.y=move.y+18
         if move.y>1000 then
             highScore=max(score,highScore)
-            highFloor=max(floor,floor)
+            highFloor=max(floorS,floorS)
             state='dead'
         end
-    elseif state=='scroll'then
-        camY=camY-floor/4
+    elseif state=='scroll' then
+        camY=camY-floorS/4
         if camY<1000 then camY=camY-1 end
         if camY<500 then camY=camY-1 end
         if camY<0 then
@@ -175,18 +176,18 @@ backColor.__index=function(t,lv)
 end
 setmetatable(backColor,backColor)
 function scene.draw()
-    --Background
-    local lv,height=int(camY/700),camY%700
-    gc.setColor(backColor[lv+1]or COLOR.D)
+    -- Background
+    local lv,height=floor(camY/700),camY%700
+    gc.setColor(backColor[lv+1] or COLOR.D)
     gc.rectangle('fill',0,720,1280,height-700)
-    gc.setColor(backColor[lv+2]or COLOR.D)
+    gc.setColor(backColor[lv+2] or COLOR.D)
     gc.rectangle('fill',0,height+20,1280,-height-20)
     if height-680>0 then
-        gc.setColor(backColor[lv+3]or COLOR.D)
+        gc.setColor(backColor[lv+3] or COLOR.D)
         gc.rectangle('fill',0,height-680,1280,680-height)
     end
 
-    if state=='menu'or state=='dead'then
+    if state=='menu' or state=='dead' then
         setFont(100)
         gc.setColor(COLOR.rainbow_light(TIME()*2.6))
         mStr("DROPPER",640,120)
@@ -199,13 +200,13 @@ function scene.draw()
 
         gc.setColor(COLOR.D)
         setFont(35)
-        mStr(MOBILE and"Touch to Start"or"Press space to Start",640,570)
+        mStr(MOBILE and "Touch to Start" or "Press space to Start",640,570)
         setFont(20)
         gc.print("Original CX-CAS version by MrZ",740,235)
         gc.print("Ported / Rewritten / Balanced by MrZ",740,260)
     end
-    if state~='menu'then
-        --High floor
+    if state~='menu' then
+        -- High floor
         gc.setColor(COLOR.Z)
         gc.setLineWidth(2)
         local y=690+camY-30*highFloor
@@ -216,8 +217,8 @@ function scene.draw()
         gc.rectangle('line',base.x-3,base.y-3,base.l+6,36)
 
         setFont(45)
-        gc.print(floor+1,move.x+move.l+15,move.y-18)
-        gc.print(floor,base.x+base.l+15,base.y-18)
+        gc.print(floorS+1,move.x+move.l+15,move.y-18)
+        gc.print(floorS,base.x+base.l+15,base.y-18)
 
         gc.setColor(COLOR.Z)
         mStr(message,640,0)

@@ -1,4 +1,4 @@
---Space but tetrominoes
+-- Space but tetrominoes
 local gc=love.graphics
 local gc_clear,gc_translate=gc.clear,gc.translate
 local gc_setColor,gc_draw=gc.setColor,gc.draw
@@ -21,8 +21,8 @@ function back.update()
         ins(mino,{
             block=TEXTURE.miniBlock[r],
             color=BLOCK_COLORS[SETTING.skin[r]],
-            ang=6.2832*rnd(),
-            rotate=6.2832*rnd(),
+            ang=MATH.tau*rnd(),
+            rotate=MATH.tau*rnd(),
             vr=.05-rnd()*.1,
             d=0,
             v=.5+rnd(),

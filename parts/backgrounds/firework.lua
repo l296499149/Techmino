@@ -1,4 +1,4 @@
---Firework
+-- Firework
 local gc=love.graphics
 local gc_clear=gc.clear
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
@@ -26,9 +26,10 @@ function back.update(dt)
             t=0,
             v=.5+rnd(),
             color=COLOR.random_dark(),
-            big=rnd()<.1,
+            big=rnd()<.12,
         })
-        t=rnd(26,62)
+        t=rnd(42,126)
+        SFX.play('rotate',.5,0,-16)
     end
     for i=#firework,1,-1 do
         local F=firework[i]
@@ -37,7 +38,7 @@ function back.update(dt)
             local x,y,color=F.x,F.y,F.color
             if F.big then
                 SFX.play('fall',.5)
-                for _=1,rnd(62,126)do
+                for _=1,rnd(62,126) do
                     ins(particle,{
                         x=x,y=y,
                         color=color,
@@ -48,7 +49,7 @@ function back.update(dt)
                 end
             else
                 SFX.play('clear_1',.4)
-                for _=1,rnd(16,26)do
+                for _=1,rnd(16,26) do
                     ins(particle,{
                         x=x,y=y,
                         color=color,

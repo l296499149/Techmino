@@ -1,7 +1,8 @@
-local gc=love.graphics
 local kb,tc=love.keyboard,love.touch
 local rnd=math.random
 local ins,rem=table.insert,table.remove
+
+local maxTime=187.5
 
 local scene={}
 
@@ -10,20 +11,21 @@ local patron=require"parts.patron"
 local names
 local counter
 
-function scene.sceneInit()
+function scene.enter()
     time=0
     v=22.6
     BG.set()
     names={}
     counter=26
+    DiscordRPC.update("Knowing Staffs")
 end
 
 function scene.mouseDown(x,y)
-    local T=40*math.min(time,185)
+    local T=40*math.min(time,maxTime)
     if x>330 and x<950 then
         if math.abs(y-900+T)<70 then
             loadGame('sprintLock',true)
-        elseif math.abs(y-7770+T)<70 then
+        elseif math.abs(y-7870+T)<70 then
             loadGame('sprintFix',true)
         end
     end
@@ -31,17 +33,17 @@ end
 scene.touchDown=scene.mouseDown
 
 function scene.keyDown(key)
-    if key=='l'then
+    if key=='l' then
         loadGame('sprintLock',true)
-    elseif key=='f'then
+    elseif key=='f' then
         loadGame('sprintFix',true)
-    elseif key=='escape'then
+    elseif key=='escape' then
         SCN.back()
     end
 end
 
 function scene.update(dt)
-    if(kb.isDown('space','return')or tc.getTouches()[1])and v<16.2 then
+    if (kb.isDown('space','return') or tc.getTouches()[1]) and v<16.2 then
         v=v+.42
     elseif v>3.55 then
         v=v-.42
@@ -50,11 +52,11 @@ function scene.update(dt)
     counter=counter-1
     if counter==0 then
         local N=patron[rnd(#patron)]
-        local T=gc.newText(getFont(N.font),N.name)
+        local T=GC.newText(getFont(N.font),N.name)
         local r=rnd()<.5
         ins(names,{
             text=T,
-            x=r and -T:getWidth()or SCR.w,
+            x=r and -T:getWidth() or SCR.w,
             y=rnd()*(SCR.h-T:getHeight()),
             w=T:getWidth(),
             vx=(r and 1 or -1)*(1.626+rnd())*(SCR.w+T:getWidth())/SCR.w,
@@ -71,26 +73,26 @@ function scene.update(dt)
 end
 
 function scene.draw()
-    gc.replaceTransform(SCR.origin)
-    gc.setColor(1,1,1,.3)
+    GC.replaceTransform(SCR.origin)
+    GC.setColor(1,1,1,.3)
     for i=1,#names do
         local N=names[i]
-        gc.draw(N.text,N.x,N.y)
+        GC.draw(N.text,N.x,N.y)
     end
 
-    gc.replaceTransform(SCR.xOy)
-    local T=40*math.min(time,185)
-    gc.setColor(.97,.97,.97,185-math.min(time,185))
+    GC.replaceTransform(SCR.xOy)
+    GC.translate(640,-40*math.min(time,maxTime)) -- 0~7600
+    GC.setColor(.97,.97,.97,math.max(maxTime-time,0))
     local L=text.staff
     setFont(40)
     for i=1,#L do
-        mStr(L[i],640,950+70*i-T)
+        GC.mStr(L[i],0,950+65*i)
     end
-    gc.setColor(1,1,1)
-    mDraw(TEXTURE.title_color,640,900-T,nil,.6)
-    mDraw(TEXTURE.title,640,7770-T,nil,.6)
-    if time>190 then
-        gc.print("CLICK ME →",50,550,-.5)
+    GC.setColor(1,1,1)
+    mDraw(TEXTURE.title_color,0,900,nil,.6)
+    mDraw(TEXTURE.title,0,7870,nil,.6)
+    if time>maxTime+6.26 then
+        GC.print("CLICK ME →",-526,8026,-.5)
     end
 end
 

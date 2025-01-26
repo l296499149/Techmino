@@ -1,47 +1,60 @@
-local emailBox=WIDGET.newInputBox{name='email',x=380,y=200,w=500,h=60,limit=128}
-local passwordBox=WIDGET.newInputBox{name='password',x=380,y=300,w=620,h=60,secret=true,regex="[ -~]",limit=64}
-
-local savePW=false
-local showEmail=true
-
-local function _login()
-    local email,password=emailBox:getText(),passwordBox:getText()
-    if not STRING.simpEmailCheck(email)then
-        MES.new('error',text.wrongEmail)return
-    elseif #password==0 then
-        MES.new('error',text.noPassword)return
-    end
-    -- password=STRING.digezt(password)
-    NET.wsconn_user_pswd(email,password)
-    if savePW then
-        saveFile({email,password},'conf/account')
-    else
-        love.filesystem.remove('conf/account')
-    end
-end
-
 local scene={}
 
-function scene.sceneInit()
-    local data=loadFile('conf/account','-canSkip')
-    if data then
-        savePW=true
-        showEmail=false
-        emailBox.secret=true
-        emailBox:setText(data[1])
-        passwordBox:setText(data[2])
+local function _authorize()
+    love.system.openURL(AUTHURL)
+end
+local function _submit()
+    local tickets=scene.widgetList.ticket:getText():upper()
+    if #tickets~=128 then
+        MES.new('error',text.wrongCode)
+    else
+        USER.aToken=tickets:sub(1,64)
+        USER.oToken=tickets:sub(65)
+        NET.login()
+    end
+end
+local function _paste()
+    local t=CLIPBOARD.get()
+    if t then
+        t=STRING.trim(t)
+        if #t==128 and t:match("[0-9A-Z]+") then
+            scene.widgetList.ticket:setText(t)
+            return
+        end
+    end
+    MES.new('error',text.wrongCode)
+end
+
+function scene.enter()
+    scene.widgetList.ticket:clear()
+end
+
+function scene.keyDown(key,rep)
+    if key=='escape' and not rep then
+        SCN.back()
+    elseif key=='return' or key=='kpenter' then
+        if #scene.widgetList.ticket:getText()==0 then
+            _authorize()
+        else
+            _submit()
+        end
+    elseif key=='v' and love.keyboard.isDown('lctrl','rctrl') then
+        _paste()
+    else
+        return true
     end
 end
 
 scene.widgetList={
-    WIDGET.newText{name='title',      x=80,  y=50,font=70,align='L'},
-    WIDGET.newButton{name='register', x=1140,y=100,w=170,h=80,color='lY',code=function()SCN.swapTo('register','swipeR')end},
-    emailBox,
-    passwordBox,
-    WIDGET.newSwitch{name='showEmail',x=550, y=420,disp=function()return showEmail end,code=function()showEmail=not showEmail emailBox.secret=not showEmail end},
-    WIDGET.newSwitch{name='keepPW',   x=900, y=420,disp=function()return savePW end,code=function()savePW=not savePW end},
-    WIDGET.newKey{name='login',       x=1140,y=540,w=170,h=80,font=40,code=_login},
-    WIDGET.newButton{name='back',     x=1140,y=640,w=170,h=80,sound='back',font=60,fText=CHAR.icon.back,code=backScene},
+    WIDGET.newText{name='title',        x=80,  y=50,font=70,align='L'},
+
+    WIDGET.newInputBox{name='ticket',   x=280, y=200,w=730,h=320,font=30,regex="[0-9A-Z]",limit=128},
+
+    WIDGET.newKey{name='authorize',     x=400, y=600,w=240,h=80,font=40,code=_authorize},
+    WIDGET.newKey{name='paste',         x=645, y=600,w=240,h=80,font=40,code=_paste},
+    WIDGET.newKey{name='submit',        x=890, y=600,w=240,h=80,font=40,code=_submit},
+
+    WIDGET.newButton{name='back',       x=1140,y=640,w=170,h=80,sound='back',font=60,fText=CHAR.icon.back,code=pressKey'escape'},
 }
 
 return scene
